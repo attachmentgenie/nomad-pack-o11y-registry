@@ -1,6 +1,7 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
   datacenters = [[ .hello_world.datacenters  | toJson ]]
+  namespace   = [[ .hello_world.namespace | quote ]]
   type = "service"
 
   group "app" {

@@ -17,6 +17,12 @@ variable "datacenters" {
   default     = ["dc1"]
 }
 
+variable "namespace" {
+  description = "The namespace where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
 variable "count" {
   description = "The number of app instances to deploy"
   type        = number
