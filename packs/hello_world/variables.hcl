@@ -56,8 +56,6 @@ variable "consul_service_tags" {
   // "traefik.http.routers.http.rule=Path(`/`)" to
   // "traefik.http.routers.http.rule=Path(`/<PATH>`)"
   default = [
-    "urlprefix-/",
     "traefik.enable=true",
-    "traefik.http.routers.http.rule=Path(`/`)",
   ]
 }
