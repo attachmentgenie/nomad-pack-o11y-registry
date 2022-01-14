@@ -14,7 +14,7 @@ variable "region" {
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["lab"]
 }
 
 variable "namespace" {
