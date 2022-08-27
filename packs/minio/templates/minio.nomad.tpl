@@ -3,12 +3,18 @@ job [[ template "job_name" . ]] {
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
-  group "app" {
+  group "minio" {
     count = [[ .my.count ]]
 
+    volume "minio" {
+      type      = "host"
+      read_only = false
+      source    = "minio"
+    }
+
     network {
-      port "http" {
-        to = 8000
+      port "s3" {
+        to = 9000
       }
     }
 
@@ -16,34 +22,33 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
+      port = "s3"
       check {
         name     = "alive"
         type     = "http"
-        path     = "/"
+        path     = "/minio/health/live"
         interval = "10s"
         timeout  = "2s"
       }
     }
     [[ end ]]
 
-    restart {
-      attempts = 2
-      interval = "30m"
-      delay = "15s"
-      mode = "fail"
-    }
-
     task "server" {
       driver = "docker"
 
-      config {
-        image = "mnomitch/hello_world_server"
-        ports = ["http"]
+      volume_mount {
+        volume      = "minio"
+        destination = "/data"
+        read_only   = false
       }
 
-      env {
-        MESSAGE = [[.my.message | quote]]
+      config {
+        image = "quay.io/minio/minio"
+        ports = ["s3"]
+        args = [
+          "server",
+          "/data",
+        ]
       }
     }
   }

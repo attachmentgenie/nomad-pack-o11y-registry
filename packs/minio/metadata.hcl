@@ -1,17 +1,10 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://min.io/"
+  author = "minio"
 }
 pack {
   name        = "minio"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "Install minio"
+  url         = "https://github.com/attachmentgenie/pack-registry/minio"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }
