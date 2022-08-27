@@ -50,6 +50,11 @@ job [[ template "job_name" . ]] {
           "/data",
         ]
       }
+
+      env {
+        MINIO_ROOT_USER = "AKIAIOSFODNN7EXAMPLE"
+        MINIO_ROOT_PASSWORD = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      }
     }
   }
 }
