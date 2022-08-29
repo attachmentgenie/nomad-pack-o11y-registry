@@ -1,14 +1,18 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
-  group "app" {
+  group "mimir" {
     count = [[ .my.count ]]
 
     network {
       port "http" {
-        to = 8000
+        to = 8080
+      }
+      port "grpc" {
+        to = 9095
       }
     }
 
@@ -27,24 +31,29 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
-    restart {
-      attempts = 2
-      interval = "30m"
-      delay = "15s"
-      mode = "fail"
-    }
-
     task "server" {
       driver = "docker"
 
       config {
-        image = "mnomitch/hello_world_server"
-        ports = ["http"]
+        image = "grafana/mimir:[[ .my.mimir_task.version ]]"
+        args = [[ .my.mimir_task.cli_args | toPrettyJson ]]
+        ports = ["grpc","http"]
+        volumes = [
+          "local/config:/etc/mimir",
+        ]
       }
 
-      env {
-        MESSAGE = [[.my.message | quote]]
+      [[- if ne .my.mimir_task_app_mimir_yaml "" ]]
+      template {
+        data = <<EOH
+      [[ .my.mimir_task_app_mimir_yaml ]]
+      EOH
+
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+        destination   = "local/config/mimir.yml"
       }
+      [[- end ]]
     }
   }
 }

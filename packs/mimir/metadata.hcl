@@ -1,17 +1,11 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://grafana.com/"
+  author = "Grafana"
 }
+
 pack {
   name        = "mimir"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "Mimir is an open source, horizontally scalable, highly available, multi-tenant, long-term storage for Prometheus."
+  url         = "https://github.com/hashicorp/nomad-pack-community-registry/mimir"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }

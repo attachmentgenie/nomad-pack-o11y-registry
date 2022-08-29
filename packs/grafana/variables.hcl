@@ -134,7 +134,7 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
-    url: http://prometheus.service.{{ env "NOMAD_DC" }}.consul:9090
+    url: http://mimir.service.{{ env "NOMAD_DC" }}.consul:9090/prometheus
     jsonData:
       exemplarTraceIdDestinations:
         - name: traceID

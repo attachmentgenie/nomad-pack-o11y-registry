@@ -5,10 +5,16 @@ variable "job_name" {
   default = ""
 }
 
-variable "region" {
-  description = "The region where jobs will be deployed"
+variable "namespace" {
+  description = "The namespace where the job should be placed"
   type        = string
-  default     = ""
+  default     = "default"
+}
+
+variable "region" {
+  description = "The region where the job should be placed"
+  type        = string
+  default     = "global"
 }
 
 variable "datacenters" {
@@ -20,13 +26,7 @@ variable "datacenters" {
 variable "count" {
   description = "The number of app instances to deploy"
   type        = number
-  default     = 2
-}
-
-variable "message" {
-  description = "The message your application will render"
-  type        = string
-  default     = "Hello World!"
+  default     = 1
 }
 
 variable "register_consul_service" {
@@ -36,22 +36,91 @@ variable "register_consul_service" {
 }
 
 variable "consul_service_name" {
-  description = "The consul service name for the mimir application"
+  description = "The consul service name for the prometheus_graphite_exporter application"
   type        = string
-  default     = "webapp"
+  default     = "mimir"
 }
 
 variable "consul_service_tags" {
-  description = "The consul service name for the mimir application"
+  description = "The consul service name for the prometheus_graphite_exporter application"
   type        = list(string)
-  // defaults to integrate with Fabio or Traefik
-  // This routes at the root path "/", to route to this service from
-  // another path, change "urlprefix-/" to "urlprefix-/<PATH>" and
-  // "traefik.http.routers.http.rule=Path(∫/∫)" to
-  // "traefik.http.routers.http.rule=Path(∫/<PATH>∫)"
   default = [
-    "urlprefix-/",
     "traefik.enable=true",
-    "traefik.http.routers.http.rule=Path(`/`)",
   ]
+}
+
+variable "mimir_task" {
+  description = "Details configuration options for the mimir task."
+  type        = object({
+    driver   = string
+    version  = string
+    cli_args = list(string)
+  })
+  default = {
+    driver   = "docker",
+    version  = "2.2.0",
+    cli_args = [
+      "--config.file=/etc/mimir/mimir.yml",
+    ]
+  }
+}
+
+variable "mimir_task_resources" {
+  description = "The resource to assign to the mimir task."
+  type        = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 500,
+    memory = 256,
+  }
+}
+
+variable "mimir_task_app_mimir_yaml" {
+  description = "The mimir configuration to pass to the task."
+  type        = string
+  default     = <<EOF
+multitenancy_enabled: false
+
+blocks_storage:
+  backend: filesystem
+  bucket_store:
+    sync_dir: /tmp/mimir/tsdb-sync
+  filesystem:
+    dir: /tmp/mimir/data/tsdb
+  tsdb:
+    dir: /tmp/mimir/tsdb
+
+compactor:
+  data_dir: /tmp/mimir/compactor
+  sharding_ring:
+    kvstore:
+      store: memberlist
+
+distributor:
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: memberlist
+
+ingester:
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: memberlist
+    replication_factor: 1
+
+ruler_storage:
+  backend: filesystem
+  filesystem:
+    dir: /tmp/mimir/rules
+
+server:
+  log_level: error
+
+store_gateway:
+  sharding_ring:
+    replication_factor: 1
+EOF
 }
