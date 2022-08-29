@@ -5,10 +5,16 @@ variable "job_name" {
   default = ""
 }
 
-variable "region" {
-  description = "The region where jobs will be deployed"
+variable "namespace" {
+  description = "The namespace where the job should be placed"
   type        = string
-  default     = ""
+  default     = "default"
+}
+
+variable "region" {
+  description = "The region where the job should be placed"
+  type        = string
+  default     = "global"
 }
 
 variable "datacenters" {
@@ -38,20 +44,37 @@ variable "register_consul_service" {
 variable "consul_service_name" {
   description = "The consul service name for the prometheus_graphite_exporter application"
   type        = string
-  default     = "webapp"
+  default     = "graphite"
 }
 
 variable "consul_service_tags" {
   description = "The consul service name for the prometheus_graphite_exporter application"
   type        = list(string)
-  // defaults to integrate with Fabio or Traefik
-  // This routes at the root path "/", to route to this service from
-  // another path, change "urlprefix-/" to "urlprefix-/<PATH>" and
-  // "traefik.http.routers.http.rule=Path(∫/∫)" to
-  // "traefik.http.routers.http.rule=Path(∫/<PATH>∫)"
   default = [
-    "urlprefix-/",
     "traefik.enable=true",
-    "traefik.http.routers.http.rule=Path(`/`)",
   ]
+}
+
+variable "prometheus_graphite_exporter_task" {
+  description = "Details configuration options for the prometheus_graphite_exporter task."
+  type        = object({
+    driver   = string
+    version  = string
+  })
+  default = {
+    driver   = "docker",
+    version  = "v0.12.3",
+  }
+}
+
+variable "prometheus_graphite_exporter_task_resources" {
+  description = "The resource to assign to the prometheus_graphite_exporter task."
+  type        = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 500,
+    memory = 256,
+  }
 }

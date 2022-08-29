@@ -1,14 +1,18 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
-  group "app" {
+  group "graphite_exporter" {
     count = [[ .my.count ]]
 
     network {
-      port "http" {
-        to = 8000
+      port "endpoint" {
+        to = 9108
+      }
+      port "graphite" {
+        to = 9109
       }
     }
 
@@ -16,7 +20,7 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
+      port = "graphite"
       check {
         name     = "alive"
         type     = "http"
@@ -34,16 +38,12 @@ job [[ template "job_name" . ]] {
       mode = "fail"
     }
 
-    task "server" {
+    task "exporter" {
       driver = "docker"
 
       config {
-        image = "mnomitch/hello_world_server"
-        ports = ["http"]
-      }
-
-      env {
-        MESSAGE = [[.my.message | quote]]
+        image = "prom/graphite-exporter:[[ .my.prometheus_graphite_exporter_task.version ]]"
+        ports = ["endpoint","graphite"]
       }
     }
   }

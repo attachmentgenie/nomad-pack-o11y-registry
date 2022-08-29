@@ -7,10 +7,17 @@
 [[- end ]]
 [[- end ]]
 
+// only deploys to a namespace if specified
+[[- define "namespace" -]]
+[[- if not (eq .my.namespace "") -]]
+namespace = [[ .my.namespace | quote]]
+[[- end -]]
+[[- end -]]
+
 // only deploys to a region if specified
-[[ define "region" -]]
+[[- define "region" -]]
 [[- if not (eq .my.region "") -]]
-  region = [[ .my.region | quote]]
+region = [[ .my.region | quote]]
 [[- end -]]
 [[- end -]]
 
