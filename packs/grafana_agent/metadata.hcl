@@ -1,17 +1,11 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://grafana.com/"
+  author = "Grafana"
 }
+
 pack {
   name        = "grafana_agent"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "The Grafana Agent collects observability data"
+  url         = "https://github.com/attachmentgenie/pack-registry/grafana_agent"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }

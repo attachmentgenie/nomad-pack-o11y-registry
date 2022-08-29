@@ -81,6 +81,8 @@ variable "mimir_task_app_mimir_yaml" {
   description = "The mimir configuration to pass to the task."
   type        = string
   default     = <<EOF
+# Do not use this configuration in production.
+# It is for demonstration purposes only.
 multitenancy_enabled: false
 
 blocks_storage:

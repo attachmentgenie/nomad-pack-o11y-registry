@@ -1,14 +1,15 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
-  group "app" {
+  group "grafana_agent" {
     count = [[ .my.count ]]
 
     network {
       port "http" {
-        to = 8000
+        to = 12345
       }
     }
 
@@ -34,17 +35,29 @@ job [[ template "job_name" . ]] {
       mode = "fail"
     }
 
-    task "server" {
+    task "agent" {
       driver = "docker"
 
       config {
-        image = "mnomitch/hello_world_server"
+        image = "grafana/agent:[[ .my.grafana_agent_task.version ]]"
+        args = [[ .my.grafana_agent_task.cli_args | toPrettyJson ]]
         ports = ["http"]
+        volumes = [
+          "local/config:/etc/grafana_agent",
+        ]
       }
 
-      env {
-        MESSAGE = [[.my.message | quote]]
+      [[- if ne .my.grafana_agent_task_app_grafana_agent_yaml "" ]]
+      template {
+        data = <<EOH
+      [[ .my.grafana_agent_task_app_grafana_agent_yaml ]]
+      EOH
+
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+        destination   = "local/config/grafana_agent.yml"
       }
+      [[- end ]]
     }
   }
 }

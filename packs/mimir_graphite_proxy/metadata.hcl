@@ -1,17 +1,11 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://grafana.com/"
+  author = "Grafana"
 }
+
 pack {
   name        = "mimir_graphite_proxy"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "graphite-proxy-writes is a proxy that accepts metrics via the Graphite protocol and writes them to Mimir."
+  url         = "https://github.com/attachmentgenie/pack-registry/mimir_graphite_proxy"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }

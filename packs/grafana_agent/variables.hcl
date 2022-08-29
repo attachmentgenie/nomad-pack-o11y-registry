@@ -5,10 +5,16 @@ variable "job_name" {
   default = ""
 }
 
-variable "region" {
-  description = "The region where jobs will be deployed"
+variable "namespace" {
+  description = "The namespace where the job should be placed"
   type        = string
-  default     = ""
+  default     = "default"
+}
+
+variable "region" {
+  description = "The region where the job should be placed"
+  type        = string
+  default     = "global"
 }
 
 variable "datacenters" {
@@ -20,7 +26,7 @@ variable "datacenters" {
 variable "count" {
   description = "The number of app instances to deploy"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "message" {
@@ -38,20 +44,58 @@ variable "register_consul_service" {
 variable "consul_service_name" {
   description = "The consul service name for the grafana_agent application"
   type        = string
-  default     = "webapp"
+  default     = "grafana-agent"
 }
 
 variable "consul_service_tags" {
   description = "The consul service name for the grafana_agent application"
   type        = list(string)
-  // defaults to integrate with Fabio or Traefik
-  // This routes at the root path "/", to route to this service from
-  // another path, change "urlprefix-/" to "urlprefix-/<PATH>" and
-  // "traefik.http.routers.http.rule=Path(∫/∫)" to
-  // "traefik.http.routers.http.rule=Path(∫/<PATH>∫)"
   default = [
-    "urlprefix-/",
     "traefik.enable=true",
-    "traefik.http.routers.http.rule=Path(`/`)",
   ]
+}
+
+variable "grafana_agent_task" {
+  description = "Details configuration options for the grafana_agent task."
+  type        = object({
+    driver   = string
+    version  = string
+    cli_args = list(string)
+  })
+  default = {
+    driver   = "docker",
+    version  = "v0.26.1",
+    cli_args = [
+      "--config.file=/etc/grafana_agent/grafana_agent.yml",
+    ]
+  }
+}
+
+variable "grafana_agent_task_resources" {
+  description = "The resource to assign to the grafana_agent task."
+  type        = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 500,
+    memory = 256,
+  }
+}
+
+variable "grafana_agent_task_app_grafana_agent_yaml" {
+  description = "The grafana_agent configuration to pass to the task."
+  type        = string
+  default     = <<EOF
+metrics:
+  wal_directory: /tmp/grafana-agent/wal
+  configs:
+    - name: agent
+      scrape_configs:
+        - job_name: agent
+          static_configs:
+            - targets: ["127.0.0.1:12345"]
+      remote_write:
+        - url: http://localhost:9009/api/v1/push
+EOF
 }

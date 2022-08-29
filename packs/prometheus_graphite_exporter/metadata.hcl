@@ -1,17 +1,11 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://prometheus.io/"
+  author = "Prometheus"
 }
+
 pack {
   name        = "prometheus_graphite_exporter"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "An exporter for metrics exported in the Graphite plaintext protocol."
+  url         = "https://github.com/attachmentgenie/pack-registry/prometheus_graphite_exporter"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }
