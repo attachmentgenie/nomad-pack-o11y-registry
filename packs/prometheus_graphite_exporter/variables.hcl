@@ -26,7 +26,7 @@ variable "datacenters" {
 variable "count" {
   description = "The number of app instances to deploy"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "message" {

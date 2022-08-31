@@ -21,7 +21,7 @@ job [[ template "job_name" . ]] {
       check {
         name     = "alive"
         type     = "http"
-        path     = "/"
+        path     = "/-/healthy"
         interval = "10s"
         timeout  = "2s"
       }
@@ -50,8 +50,8 @@ job [[ template "job_name" . ]] {
       [[- if ne .my.grafana_agent_task_app_grafana_agent_yaml "" ]]
       template {
         data = <<EOH
-      [[ .my.grafana_agent_task_app_grafana_agent_yaml ]]
-      EOH
+[[ .my.grafana_agent_task_app_grafana_agent_yaml ]]
+EOH
 
         change_mode   = "signal"
         change_signal = "SIGHUP"

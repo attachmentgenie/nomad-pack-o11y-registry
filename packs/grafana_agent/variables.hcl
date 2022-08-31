@@ -87,6 +87,7 @@ variable "grafana_agent_task_app_grafana_agent_yaml" {
   description = "The grafana_agent configuration to pass to the task."
   type        = string
   default     = <<EOF
+---
 metrics:
   wal_directory: /tmp/grafana-agent/wal
   configs:
@@ -96,6 +97,6 @@ metrics:
           static_configs:
             - targets: ["127.0.0.1:12345"]
       remote_write:
-        - url: http://localhost:9009/api/v1/push
+        - url: http://192.168.1.11:25687/api/v1/push
 EOF
 }

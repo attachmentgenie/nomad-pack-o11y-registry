@@ -20,7 +20,7 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "graphite"
+      port = "endpoint"
       check {
         name     = "alive"
         type     = "http"
