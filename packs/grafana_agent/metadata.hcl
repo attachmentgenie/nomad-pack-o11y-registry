@@ -6,6 +6,6 @@ app {
 pack {
   name        = "grafana_agent"
   description = "The Grafana Agent collects observability data"
-  url         = "https://github.com/attachmentgenie/pack-registry/grafana_agent"
+  url         = "https://github.com/attachmentgenie/nomad-pack-lgtm-registry/grafana_agent"
   version     = "0.1.0"
 }

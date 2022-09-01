@@ -32,7 +32,7 @@ job [[ template "job_name" . ]] {
     [[ end ]]
 
     task "server" {
-      driver = "docker"
+      driver = "[[ .my.mimir_task.driver ]]"
 
       config {
         image = "grafana/mimir:[[ .my.mimir_task.version ]]"

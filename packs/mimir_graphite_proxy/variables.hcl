@@ -5,10 +5,16 @@ variable "job_name" {
   default = ""
 }
 
-variable "region" {
-  description = "The region where jobs will be deployed"
+variable "namespace" {
+  description = "The namespace where the job should be placed"
   type        = string
-  default     = ""
+  default     = "default"
+}
+
+variable "region" {
+  description = "The region where the job should be placed"
+  type        = string
+  default     = "global"
 }
 
 variable "datacenters" {
@@ -20,13 +26,7 @@ variable "datacenters" {
 variable "count" {
   description = "The number of app instances to deploy"
   type        = number
-  default     = 2
-}
-
-variable "message" {
-  description = "The message your application will render"
-  type        = string
-  default     = "Hello World!"
+  default     = 1
 }
 
 variable "register_consul_service" {
@@ -38,20 +38,27 @@ variable "register_consul_service" {
 variable "consul_service_name" {
   description = "The consul service name for the mimir_graphite_proxy application"
   type        = string
-  default     = "webapp"
+  default     = "mimir-graphite-proxy"
 }
 
 variable "consul_service_tags" {
   description = "The consul service name for the mimir_graphite_proxy application"
   type        = list(string)
-  // defaults to integrate with Fabio or Traefik
-  // This routes at the root path "/", to route to this service from
-  // another path, change "urlprefix-/" to "urlprefix-/<PATH>" and
-  // "traefik.http.routers.http.rule=Path(∫/∫)" to
-  // "traefik.http.routers.http.rule=Path(∫/<PATH>∫)"
-  default = [
-    "urlprefix-/",
-    "traefik.enable=true",
-    "traefik.http.routers.http.rule=Path(`/`)",
-  ]
+  default = []
+}
+
+variable "mimir_graphite_proxy_task" {
+  description = "Details configuration options for the grafana_agent task."
+  type        = object({
+    driver   = string
+    version  = string
+    cli_args = list(string)
+  })
+  default = {
+    driver   = "docker",
+    version  = "latest",
+    cli_args = [
+      "-auth.enable=false",
+    ]
+  }
 }

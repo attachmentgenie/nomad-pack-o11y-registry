@@ -64,9 +64,13 @@ variable "grafana_agent_task" {
   })
   default = {
     driver   = "docker",
-    version  = "v0.26.1",
+    version  = "v0.27.0",
     cli_args = [
-      "--config.file=/etc/grafana_agent/grafana_agent.yml",
+      "-config.file=/etc/grafana_agent/grafana_agent.yml",
+      "-metrics.wal-directory=/tmp/agent/wal",
+      "-enable-features=integrations-next",
+      "-config.expand-env",
+      "-config.enable-read-api",
     ]
   }
 }
@@ -88,15 +92,18 @@ variable "grafana_agent_task_app_grafana_agent_yaml" {
   type        = string
   default     = <<EOF
 ---
+server:
+  log_level: debug
 metrics:
-  wal_directory: /tmp/grafana-agent/wal
+  global:
+    scrape_interval: 60s
+    remote_write:
+      - url: http://192.168.1.11:25687/api/v1/push
   configs:
-    - name: agent
-      scrape_configs:
-        - job_name: agent
-          static_configs:
-            - targets: ["127.0.0.1:12345"]
-      remote_write:
-        - url: http://192.168.1.11:25687/api/v1/push
+  - name: default
+    scrape_configs:
+    - job_name: agent
+      static_configs:
+      - targets: ['localhost:12345']
 EOF
 }

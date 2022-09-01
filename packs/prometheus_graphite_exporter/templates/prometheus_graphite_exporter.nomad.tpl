@@ -39,7 +39,7 @@ job [[ template "job_name" . ]] {
     }
 
     task "exporter" {
-      driver = "docker"
+      driver = "[[ .my.prometheus_graphite_exporter_task.driver ]]"
 
       config {
         image = "prom/graphite-exporter:[[ .my.prometheus_graphite_exporter_task.version ]]"

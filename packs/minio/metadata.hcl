@@ -5,6 +5,6 @@ app {
 pack {
   name        = "minio"
   description = "Install minio"
-  url         = "https://github.com/attachmentgenie/pack-registry/minio"
+  url         = "https://github.com/attachmentgenie/nomad-pack-lgtm-registry/minio"
   version     = "0.1.0"
 }

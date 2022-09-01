@@ -1,5 +1,6 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
@@ -7,7 +8,7 @@ job [[ template "job_name" . ]] {
     count = [[ .my.count ]]
 
     network {
-      port "http" {
+      port "endpoint" {
         to = 8000
       }
     }
@@ -16,7 +17,7 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
+      port = "endpoint"
       check {
         name     = "alive"
         type     = "http"
@@ -35,15 +36,12 @@ job [[ template "job_name" . ]] {
     }
 
     task "server" {
-      driver = "docker"
+      driver = "[[ .my.mimir_graphite_proxy_task.driver ]]"
 
       config {
-        image = "mnomitch/hello_world_server"
-        ports = ["http"]
-      }
-
-      env {
-        MESSAGE = [[.my.message | quote]]
+        image = "attachmentgenie/mimir_graphite_proxy:[[ .my.mimir_graphite_proxy_task.version ]]"
+        args = [[ .my.mimir_graphite_proxy_task.cli_args | toPrettyJson ]]
+        ports = ["endpoint"]
       }
     }
   }

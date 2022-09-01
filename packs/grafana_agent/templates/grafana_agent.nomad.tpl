@@ -2,31 +2,16 @@ job [[ template "job_name" . ]] {
   [[ template "region" . ]]
   [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
-  type = "service"
+  type = "system"
 
   group "grafana_agent" {
     count = [[ .my.count ]]
 
     network {
-      port "http" {
+      port "endpoint" {
         to = 12345
       }
     }
-
-    [[ if .my.register_consul_service ]]
-    service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
-      check {
-        name     = "alive"
-        type     = "http"
-        path     = "/-/healthy"
-        interval = "10s"
-        timeout  = "2s"
-      }
-    }
-    [[ end ]]
 
     restart {
       attempts = 2
@@ -36,12 +21,12 @@ job [[ template "job_name" . ]] {
     }
 
     task "agent" {
-      driver = "docker"
+      driver = "[[ .my.grafana_agent_task.driver ]]"
 
       config {
         image = "grafana/agent:[[ .my.grafana_agent_task.version ]]"
         args = [[ .my.grafana_agent_task.cli_args | toPrettyJson ]]
-        ports = ["http"]
+        ports = ["endpoint"]
         volumes = [
           "local/config:/etc/grafana_agent",
         ]

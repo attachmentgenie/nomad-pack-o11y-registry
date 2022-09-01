@@ -25,7 +25,7 @@ job [[ template "full_job_name" . ]] {
     }
 
     task "prometheus" {
-      driver = "docker"
+      driver = "[[ .prometheus.prometheus_task.driver ]]"
 
       config {
         image = "prom/prometheus:v[[ .prometheus.prometheus_task.version ]]"
