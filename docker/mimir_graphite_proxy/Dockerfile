@@ -6,5 +6,6 @@ RUN cd mimir-proxies && make build
 FROM gcr.io/distroless/static AS final
 COPY --from=build /go/mimir-proxies/dist/graphite-proxy-writes /graphite-proxy-writes
 EXPOSE 8000
+EXPOSE 8081
 ENTRYPOINT ["/graphite-proxy-writes"]
 CMD []

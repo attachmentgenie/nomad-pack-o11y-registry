@@ -8,6 +8,9 @@ job [[ template "job_name" . ]] {
     count = [[ .my.count ]]
 
     network {
+      port "health" {
+        to = 8081
+      }
       port "endpoint" {
         to = 8000
       }
@@ -21,7 +24,8 @@ job [[ template "job_name" . ]] {
       check {
         name     = "alive"
         type     = "http"
-        path     = "/"
+        port     = "health"
+        path     = "/healthz"
         interval = "10s"
         timeout  = "2s"
       }
@@ -41,7 +45,7 @@ job [[ template "job_name" . ]] {
       config {
         image = "attachmentgenie/mimir_graphite_proxy:[[ .my.mimir_graphite_proxy_task.version ]]"
         args = [[ .my.mimir_graphite_proxy_task.cli_args | toPrettyJson ]]
-        ports = ["endpoint"]
+        ports = ["endpoint","health"]
       }
     }
   }

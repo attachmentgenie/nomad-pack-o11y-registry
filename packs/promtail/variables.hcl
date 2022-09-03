@@ -4,7 +4,6 @@ variable "job_name" {
   default     = ""
 }
 
-
 variable "namespace" {
   description = "The namespace where the job should be placed."
   type        = string

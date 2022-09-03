@@ -38,7 +38,7 @@ variable "register_consul_service" {
 variable "consul_service_name" {
   description = "The consul service name for the mimir_graphite_proxy application"
   type        = string
-  default     = "mimir-graphite-proxy"
+  default     = "graphite"
 }
 
 variable "consul_service_tags" {
