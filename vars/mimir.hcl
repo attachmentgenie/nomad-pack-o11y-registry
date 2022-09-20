@@ -1,3 +1,7 @@
+consul_service_tags = [
+  "traefik.enable=true",
+  "metrics"
+]
 datacenters = [
   "lab",
 ]
@@ -10,7 +14,7 @@ common:
   storage:
     backend: s3
     s3:
-      endpoint: 192.168.1.11:26801
+      endpoint: 192.168.1.11:28839
       access_key_id: AKIAIOSFODNN7EXAMPLE
       secret_access_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
       insecure: true
@@ -54,3 +58,7 @@ store_gateway:
   sharding_ring:
     replication_factor: 1
 EOF
+mimir_upstreams = [{
+  name = "s3",
+  port = 9000,
+}]

@@ -63,9 +63,18 @@ job [[ template "job_name" . ]] {
       name = "[[ .tempo.consul_service_name ]]"
       tags = [[ .tempo.consul_service_tags | toStringList ]]
       port = "[[ .tempo.http_port ]]"
-      [[ if .tempo.register_consul_service ]]
+      [[ if .tempo.register_consul_connect_enabled ]]
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            [[ range $upstream := .tempo.tempo_upstreams ]]
+            upstreams {
+              destination_name = [[ $upstream.name | quote ]]
+              local_bind_port  = [[ $upstream.port ]]
+            }
+            [[ end ]]
+          }
+        }
       }
       [[ end ]]
     }

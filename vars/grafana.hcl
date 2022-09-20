@@ -1,13 +1,18 @@
 datacenters = [
   "lab",
 ]
+grafana_consul_tags = [
+  "traefik.enable=true",
+  "metrics"
+]
 grafana_task_config_datasources = <<EOF
 apiVersion: 1
 datasources:
   - name: Loki
     type: loki
     access: proxy
-    url: http://192.168.1.11:21015
+    uid: loki
+    url: http://localhost:3100
     jsonData:
       derivedFields:
         - datasourceUid: tempo
@@ -17,12 +22,8 @@ datasources:
   - name: Mimir
     type: prometheus
     access: proxy
-    url: http://192.168.1.11:27427/prometheus
     uid: mimir
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://192.168.1.11:23636
+    url: http://localhost:9009/prometheus
     jsonData:
       exemplarTraceIdDestinations:
         - name: traceID
@@ -30,6 +31,16 @@ datasources:
   - name: Tempo
     type: tempo
     access: proxy
-    url: http://192.168.1.11:25096
     uid: tempo
+    url: http://localhost:3200
 EOF
+grafana_upstreams = [{
+  name = "loki",
+  port = 3100,
+},{
+  name = "mimir",
+  port = 9009,
+},{
+  name = "tempo",
+  port = 3200,
+}]

@@ -14,6 +14,34 @@ job [[ template "full_job_name" . ]] {
   [[- end ]][[- end ]]
 
   group "prometheus" {
+    [[- if .prometheus.prometheus_task_services ]]
+    [[- range $idx, $service := .prometheus.prometheus_task_services ]]
+    service {
+      name = [[ $service.service_name | quote ]]
+      port = [[ $service.service_port_label | quote ]]
+      tags = [[ $service.service_tags | toStringList ]]
+
+      check {
+        type     = "http"
+        path     = [[ $service.check_path | quote ]]
+        interval = [[ $service.check_interval | quote ]]
+        timeout  = [[ $service.check_timeout | quote ]]
+      }
+      connect {
+        sidecar_service {
+          proxy {
+            [[ range $upstream := $service.service_upstreams ]]
+            upstreams {
+              destination_name = [[ $upstream.name | quote ]]
+              local_bind_port  = [[ $upstream.port ]]
+            }
+            [[ end ]]
+          }
+        }
+      }
+    }
+    [[- end ]]
+    [[- end ]]
 
     network {
       mode = [[ .prometheus.prometheus_group_network.mode | quote ]]
@@ -63,23 +91,6 @@ EOH
         cpu    = [[ .prometheus.prometheus_task_resources.cpu ]]
         memory = [[ .prometheus.prometheus_task_resources.memory ]]
       }
-
-      [[- if .prometheus.prometheus_task_services ]]
-      [[- range $idx, $service := .prometheus.prometheus_task_services ]]
-      service {
-        name = [[ $service.service_name | quote ]]
-        port = [[ $service.service_port_label | quote ]]
-        tags = [[ $service.service_tags | toStringList ]]
-
-        check {
-          type     = "http"
-          path     = [[ $service.check_path | quote ]]
-          interval = [[ $service.check_interval | quote ]]
-          timeout  = [[ $service.check_timeout | quote ]]
-        }
-      }
-      [[- end ]]
-      [[- end ]]
     }
   }
 }

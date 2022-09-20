@@ -143,6 +143,7 @@ variable "prometheus_task_services" {
     service_port_label = string
     service_name       = string
     service_tags       = list(string)
+    service_upstreams  = list(object({name = string, port = string}))
     check_enabled      = bool
     check_path         = string
     check_interval     = string
@@ -151,7 +152,8 @@ variable "prometheus_task_services" {
   default = [{
     service_port_label = "http",
     service_name       = "prometheus",
-    service_tags       = [],
+    service_tags       = ["metrics"],
+    service_upstreams  = [],
     check_enabled      = true,
     check_path         = "/-/healthy",
     check_interval     = "3s",

@@ -50,9 +50,7 @@ variable "consul_service_name" {
 variable "consul_service_tags" {
   description = "The consul service name for the prometheus_graphite_exporter application"
   type        = list(string)
-  default = [
-    "traefik.enable=true",
-  ]
+  default = []
 }
 
 variable "prometheus_graphite_exporter_task" {

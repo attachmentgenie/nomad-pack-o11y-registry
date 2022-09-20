@@ -13,7 +13,7 @@ job [[ template "job_name" . ]] {
   [[- end ]][[- end ]]
 
   group "loki" {
-    count = 1
+    count = [[ .loki.count ]]
 
     network {
       mode = "bridge"
@@ -27,14 +27,27 @@ job [[ template "job_name" . ]] {
       }
     }
 
+    [[ if .my.register_consul_service ]]
     service {
-      name = "loki"
-      port = "[[ .loki.http_port ]]"
-
+      name = "[[ .my.consul_service_name ]]"
+      tags = [[ .my.consul_service_tags | toStringList ]]
+      port = "[[ .my.http_port ]]"
+      [[ if .my.register_consul_connect_enabled ]]
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            [[ range $upstream := .my.loki_upstreams ]]
+            upstreams {
+              destination_name = [[ $upstream.name | quote ]]
+              local_bind_port  = [[ $upstream.port ]]
+            }
+            [[ end ]]
+          }
+        }
       }
+      [[ end ]]
     }
+    [[ end ]]
 
     task "loki" {
       driver = "docker"

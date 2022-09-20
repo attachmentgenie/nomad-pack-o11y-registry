@@ -18,6 +18,27 @@ job [[ template "full_job_name" . ]] {
   [[- end ]][[- end ]]
 
   group "otel-collector" {
+    [[- if $vars.task_services ]]
+    [[ range $idx, $service := $vars.task_services ]]
+    service {
+      name = [[ $service.service_name | quote ]]
+      port = [[ $service.service_port_label | quote ]]
+      tags = [[ template "traefik_service_tags" (dict "traefik_config" $vars.traefik_config "service" $service) ]]
+      [[- if $service.check_enabled ]]
+      check {
+        type     = "http"
+        path     = [[ $service.check_path | quote ]]
+        interval = [[ $service.check_interval | quote ]]
+        timeout  = [[ $service.check_timeout | quote ]]
+      }
+      [[- end ]]
+      connect {
+        sidecar_service {}
+      }
+    }
+    [[ end ]]
+    [[- end ]]
+
     [[- if eq $vars.job_type "service" ]]
     count = [[ $vars.instance_count ]]
     [[- end ]]
@@ -76,24 +97,6 @@ EOH
         cpu    = [[ $vars.resources.cpu ]]
         memory = [[ $vars.resources.memory ]]
       }
-
-      [[- if $vars.task_services ]]
-      [[ range $idx, $service := $vars.task_services ]]
-      service {
-        name = [[ $service.service_name | quote ]]
-        port = [[ $service.service_port_label | quote ]]
-        tags = [[ template "traefik_service_tags" (dict "traefik_config" $vars.traefik_config "service" $service) ]]
-        [[- if $service.check_enabled ]]
-        check {
-          type     = "http"
-          path     = [[ $service.check_path | quote ]]
-          interval = [[ $service.check_interval | quote ]]
-          timeout  = [[ $service.check_timeout | quote ]]
-        }
-        [[- end ]]
-      }
-      [[ end ]]
-      [[- end ]]
     }
   }
 }

@@ -62,3 +62,11 @@ variable "mimir_graphite_proxy_task" {
     ]
   }
 }
+
+variable "mimir_graphite_proxy_upstreams" {
+  description = ""
+  type = list(object({
+    name = string
+    port = number
+  }))
+}

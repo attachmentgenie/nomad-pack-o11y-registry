@@ -13,6 +13,7 @@ job [[ template "job_name" . ]] {
     }
 
     network {
+      mode = "bridge"
       port "s3" {
         to = 9000
       }
@@ -30,6 +31,11 @@ job [[ template "job_name" . ]] {
         interval = "10s"
         timeout  = "2s"
       }
+      [[ if .my.register_consul_service ]]
+      connect {
+        sidecar_service {}
+      }
+      [[ end ]]
     }
     [[ end ]]
 

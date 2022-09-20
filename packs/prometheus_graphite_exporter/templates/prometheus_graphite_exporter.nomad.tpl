@@ -8,6 +8,7 @@ job [[ template "job_name" . ]] {
     count = [[ .my.count ]]
 
     network {
+      mode = "bridge"
       port "endpoint" {
         to = 9108
       }
@@ -28,6 +29,11 @@ job [[ template "job_name" . ]] {
         interval = "10s"
         timeout  = "2s"
       }
+      [[ if .my.register_consul_service ]]
+      connect {
+        sidecar_service {}
+      }
+      [[ end ]]
     }
     [[ end ]]
 

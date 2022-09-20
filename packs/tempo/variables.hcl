@@ -76,24 +76,15 @@ variable "register_consul_connect_enabled" {
 }
 
 variable "consul_service_name" {
-  description = "The consul service name for the hello-world application"
+  description = "The consul service name for the tempo application"
   type        = string
   default     = "tempo"
 }
 
 variable "consul_service_tags" {
-  description = "The consul service name for the hello-world application"
+  description = "The consul service name for the tempo application"
   type        = list(string)
-  // defaults to integrate with Fabio or Traefik
-  // This routes at the root path "/", to route to this service from
-  // another path, change "urlprefix-/" to "urlprefix-/<PATH>" and
-  // "traefik.http.routers.http.rule=Path(`/`)" to
-  // "traefik.http.routers.http.rule=Path(`/<PATH>`)"
-  default = [
-    "urlprefix-/",
-    "traefik.enable=true",
-    "traefik.http.routers.http.rule=Path(`/`)",
-  ]
+  default = []
 }
 
 variable "tempo_yaml" {
@@ -143,4 +134,12 @@ storage:
       max_workers: 100
       queue_depth: 10000
 EOF
+}
+
+variable "tempo_upstreams" {
+  description = ""
+  type = list(object({
+    name = string
+    port = number
+  }))
 }

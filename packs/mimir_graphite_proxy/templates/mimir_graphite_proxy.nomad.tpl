@@ -8,6 +8,7 @@ job [[ template "job_name" . ]] {
     count = [[ .my.count ]]
 
     network {
+      mode = "bridge"
       port "health" {
         to = 8081
       }
@@ -29,6 +30,20 @@ job [[ template "job_name" . ]] {
         interval = "10s"
         timeout  = "2s"
       }
+      [[ if .my.register_consul_service ]]
+      connect {
+        sidecar_service {
+          proxy {
+            [[ range $upstream := .my.mimir_graphite_proxy_upstreams ]]
+            upstreams {
+              destination_name = [[ $upstream.name | quote ]]
+              local_bind_port  = [[ $upstream.port ]]
+            }
+            [[ end ]]
+          }
+        }
+      }
+      [[ end ]]
     }
     [[ end ]]
 

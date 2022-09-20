@@ -17,16 +17,23 @@ alerting:
         services:
         - alertmanager
 
+remote_write:
+  - url: http://localhost:9009/api/v1/push
+
 scrape_configs:
-  - job_name: prometheus
-    static_configs:
-    - targets:
-      - 0.0.0.0:9090
-  - job_name: graphite
-    static_configs:
-    - targets:
-      - 192.168.1.11:22208
-  - job_name: "nomad_server"
+  - job_name: lab
+    consul_sd_configs:
+    - server: {{ env "attr.unique.network.ip-address" }}:8500
+      datacenter: lab
+      tags:
+      - metrics
+    relabel_configs:
+    - source_labels: [__meta_consul_service]
+      target_label: job
+    - source_labels: ['__meta_consul_service_id']
+      regex: '.*-sidecar-proxy'
+      action: drop
+  - job_name: "nomad"
     metrics_path: "/v1/metrics"
     params:
       format:
@@ -35,15 +42,20 @@ scrape_configs:
     - server: "{{ env "attr.unique.network.ip-address" }}:8500"
       services:
         - "nomad"
+        - "nomad-client"
       tags:
         - "http"
-  - job_name: "nomad_client"
-    metrics_path: "/v1/metrics"
-    params:
-      format:
-      - "prometheus"
-    consul_sd_configs:
-    - server: "{{ env "attr.unique.network.ip-address" }}:8500"
-      services:
-        - "nomad-client"
+    relabel_configs:
+    - source_labels: [__meta_consul_service]
+      target_label: job
 EOF
+prometheus_task_services = [{
+  service_port_label = "http",
+  service_name       = "prometheus",
+  service_tags       = ["metrics"],
+  service_upstreams  = [{name = "mimir", port = 9009}],
+  check_enabled      = true,
+  check_path         = "/-/healthy",
+  check_interval     = "3s",
+  check_timeout      = "1s",
+}]

@@ -21,6 +21,12 @@ variable "constraints" {
   ]
 }
 
+variable "count" {
+  description = "The number of app instances to deploy"
+  type        = number
+  default     = 1
+}
+
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement."
   type        = list(string)
@@ -63,6 +69,30 @@ variable "resources" {
   }
 }
 
+variable "register_consul_service" {
+  description = "If you want to register a consul service for the job"
+  type        = bool
+  default     = true
+}
+
+variable "register_consul_connect_enabled" {
+  description = "If you want to run the consul service with connect enabled. This will only work with register_consul_service = true"
+  type        = bool
+  default     = true
+}
+
+variable "consul_service_name" {
+  description = "The consul service name for the tempo application"
+  type        = string
+  default     = "loki"
+}
+
+variable "consul_service_tags" {
+  description = "The consul service name for the tempo application"
+  type        = list(string)
+  default = []
+}
+
 variable "loki_yaml" {
   description = "The Loki configuration to pass to the task."
   type        = string
@@ -73,4 +103,12 @@ variable "rules_yaml" {
   description = "The Loki rules to pass to the task."
   type        = string
   default     = ""
+}
+
+variable "loki_upstreams" {
+  description = ""
+  type = list(object({
+    name = string
+    port = number
+  }))
 }
