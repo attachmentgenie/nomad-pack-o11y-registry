@@ -18,7 +18,7 @@ alerting:
         - alertmanager
 
 remote_write:
-  - url: http://localhost:9009/api/v1/push
+  - url: http://192.168.1.11:25615/api/v1/push
 
 scrape_configs:
   - job_name: lab

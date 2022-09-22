@@ -36,11 +36,8 @@ schema_config:
       period: 168h
 storage_config:
   aws:
-    bucketnames: logs
-    endpoint: 192.168.1.11:31300
-    access_key_id: AKIAIOSFODNN7EXAMPLE
-    secret_access_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-    insecure: true
+    s3: http://minioadmin:minioadmin@192.168.1.11:21062/logs
+    s3forcepathstyle: true
   boltdb:
     directory: /loki/index
   filesystem:

@@ -12,7 +12,7 @@ datasources:
     type: loki
     access: proxy
     uid: loki
-    url: http://localhost:3100
+    url: http://192.168.1.11:22941
     jsonData:
       derivedFields:
         - datasourceUid: tempo
@@ -23,7 +23,7 @@ datasources:
     type: prometheus
     access: proxy
     uid: mimir
-    url: http://localhost:9009/prometheus
+    url: http://192.168.1.11:25615/prometheus
     jsonData:
       exemplarTraceIdDestinations:
         - name: traceID
@@ -32,7 +32,7 @@ datasources:
     type: tempo
     access: proxy
     uid: tempo
-    url: http://localhost:3200
+    url: http://192.168.1.11:27508
 EOF
 grafana_upstreams = [{
   name = "loki",

@@ -58,8 +58,9 @@ job [[ template "job_name" . ]] {
       }
 
       env {
-        MINIO_ROOT_USER = "AKIAIOSFODNN7EXAMPLE"
-        MINIO_ROOT_PASSWORD = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        [[- range $var := .my.env_vars ]]
+        [[ $var.key ]] = "[[ $var.value ]]"
+        [[- end ]]
       }
     }
   }

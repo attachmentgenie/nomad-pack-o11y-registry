@@ -46,3 +46,11 @@ variable "consul_service_tags" {
   type        = list(string)
   default = []
 }
+
+variable "env_vars" {
+  description = "env vars to inject"
+  type = list(object({
+    key   = string
+    value = string
+  }))
+}

@@ -14,9 +14,9 @@ common:
   storage:
     backend: s3
     s3:
-      endpoint: 192.168.1.11:31300
-      access_key_id: AKIAIOSFODNN7EXAMPLE
-      secret_access_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      endpoint: 192.168.1.11:21062
+      access_key_id: minioadmin
+      secret_access_key: minioadmin
       insecure: true
       bucket_name: metrics
 

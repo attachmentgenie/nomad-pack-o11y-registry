@@ -50,9 +50,9 @@ storage:
       path: /tmp/tempo/blocks
     s3:
       bucket: traces
-      endpoint: 192.168.1.11:31300
-      access_key: AKIAIOSFODNN7EXAMPLE
-      secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      endpoint: 192.168.1.11:21062
+      access_key: minioadmin
+      secret_key: minioadmin
       insecure: true
     pool:
       max_workers: 100
