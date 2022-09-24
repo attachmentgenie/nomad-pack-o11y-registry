@@ -1,5 +1,6 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .tempo.datacenters | toStringList ]]
 
   [[ if .tempo.constraints ]][[ range $idx, $constraint := .tempo.constraints ]]

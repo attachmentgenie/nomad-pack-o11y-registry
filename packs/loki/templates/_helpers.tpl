@@ -8,10 +8,16 @@
 [[- end -]]
 [[- end -]]
 
-// only deploys to a region if specified
+// only deploys to a namespace if specified
+[[- define "namespace" -]]
+[[- if not (eq .my.namespace "") -]]
+namespace = [[ .my.namespace | quote]]
+[[- end -]]
+[[- end -]]
 
-[[- define "region" -]]
-[[- if not (eq .loki.region "") -]]
-region = [[ .loki.region | quote]]
+// only deploys to a region if specified
+[[ define "region" -]]
+[[- if not (eq .my.region "") -]]
+  region = [[ .my.region | quote]]
 [[- end -]]
 [[- end -]]

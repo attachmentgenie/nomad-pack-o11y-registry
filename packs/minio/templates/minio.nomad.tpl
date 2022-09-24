@@ -1,5 +1,6 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 

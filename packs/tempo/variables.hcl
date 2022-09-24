@@ -33,6 +33,12 @@ variable "region" {
   default     = "global"
 }
 
+variable "namespace" {
+  description = "The namespace where the job should be placed"
+  type        = string
+  default     = "default"
+}
+
 variable "version_tag" {
   description = "The docker image version. For options, see https://hub.docker.com/r/grafana/tempo"
   type        = string

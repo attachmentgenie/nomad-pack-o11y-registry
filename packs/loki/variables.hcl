@@ -33,6 +33,12 @@ variable "datacenters" {
   default     = ["dc1"]
 }
 
+variable "namespace" {
+  description = "The namespace where the job should be placed"
+  type        = string
+  default     = "default"
+}
+
 variable "region" {
   description = "The region where the job should be placed."
   type        = string

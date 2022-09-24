@@ -5,6 +5,12 @@ variable "job_name" {
   default = ""
 }
 
+variable "namespace" {
+  description = "The namespace where the job should be placed"
+  type        = string
+  default     = "default"
+}
+
 variable "region" {
   description = "The region where jobs will be deployed"
   type        = string
