@@ -32,7 +32,7 @@ datasources:
     type: tempo
     access: proxy
     uid: tempo
-    url: http://192.168.1.11:27508
+    url: http://192.168.1.11:20082
 EOF
 grafana_upstreams = [{
   name = "loki",

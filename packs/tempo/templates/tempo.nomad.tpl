@@ -42,12 +42,12 @@ job [[ template "job_name" . ]] {
         static = 14250
       }
       port "otlp_grpc" {
-        to = 55680
-        static = 55680
+        to = 4317
+        static = 4317
       }
       port "otlp_http" {
-        to = 55681
-        static = 55681
+        to = 4318
+        static = 4318
       }
       port "opencensus" {
         to = 55678

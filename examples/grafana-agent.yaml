@@ -1,0 +1,41 @@
+integrations:
+  node_exporter:
+    enabled: true
+logs:
+  positions_directory: /tmp/grafana-agent/positions
+  configs:
+    - name: agent-nuc1
+      clients:
+        - url: http://192.168.1.11:22941/loki/api/v1/push
+          tenant_id: tenant1
+      scrape_configs:
+      - job_name: system
+        static_configs:
+        - targets:
+          - localhost
+          labels:
+            job: varlogs
+            __path__: /var/log/*log
+metrics:
+  wal_directory: /tmp/grafana-agent/wal
+  global:
+    scrape_interval: 15s
+    remote_write:
+      - url: http://192.168.1.11:25615/api/v1/push
+  configs:
+    - name: agent-nuc1
+      scrape_configs:
+        - job_name: agent
+          static_configs:
+            - targets: ["127.0.0.1:9090"]
+traces:
+  configs:
+    - name: agent-nuc1
+      receivers:
+        otlp:
+          protocols:
+              grpc: null
+              http: null
+      remote_write:
+        - endpoint: 192.168.1.11:55680
+          insecure: true
