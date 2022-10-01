@@ -32,7 +32,7 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "[[ .my.http_port ]]"
+      port = "http"
       [[ if .my.register_consul_connect_enabled ]]
       connect {
         sidecar_service {

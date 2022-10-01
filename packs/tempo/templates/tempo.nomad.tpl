@@ -63,7 +63,7 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .tempo.consul_service_name ]]"
       tags = [[ .tempo.consul_service_tags | toStringList ]]
-      port = "[[ .tempo.http_port ]]"
+      port = "http"
       [[ if .tempo.register_consul_connect_enabled ]]
       connect {
         sidecar_service {
