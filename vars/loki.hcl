@@ -36,7 +36,7 @@ schema_config:
       period: 168h
 storage_config:
   aws:
-    s3: http://minioadmin:minioadmin@192.168.1.11:21062/logs
+    s3: http://minioadmin:minioadmin@192.168.56.40:22685/logs
     s3forcepathstyle: true
   boltdb:
     directory: /loki/index
@@ -54,3 +54,4 @@ limits_config:
   reject_old_samples: true
   reject_old_samples_max_age: 168h
 EOF
+version_tag = "2.6.1"

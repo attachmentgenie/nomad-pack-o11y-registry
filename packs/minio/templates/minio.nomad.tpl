@@ -50,7 +50,7 @@ job [[ template "job_name" . ]] {
       }
 
       config {
-        image = "quay.io/minio/minio"
+        image = "quay.io/minio/minio:[[ .my.version_tag ]]"
         ports = ["s3"]
         args = [
           "server",

@@ -61,7 +61,7 @@ variable "prometheus_graphite_exporter_task" {
   })
   default = {
     driver   = "docker",
-    version  = "v0.12.3",
+    version  = "latest",
   }
 }
 

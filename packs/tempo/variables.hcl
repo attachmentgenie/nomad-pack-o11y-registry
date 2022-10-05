@@ -42,7 +42,7 @@ variable "namespace" {
 variable "version_tag" {
   description = "The docker image version. For options, see https://hub.docker.com/r/grafana/tempo"
   type        = string
-  default     = "1.5.0"
+  default     = "latest"
 }
 
 variable "http_port" {

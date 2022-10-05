@@ -50,7 +50,7 @@ storage:
       path: /tmp/tempo/blocks
     s3:
       bucket: traces
-      endpoint: 192.168.1.11:21062
+      endpoint: 192.168.56.40:22685
       access_key: minioadmin
       secret_key: minioadmin
       insecure: true
@@ -58,3 +58,4 @@ storage:
       max_workers: 100
       queue_depth: 10000
 EOF
+version_tag = "1.5.0"

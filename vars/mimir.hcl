@@ -10,7 +10,7 @@ common:
   storage:
     backend: s3
     s3:
-      endpoint: 192.168.1.11:21062
+      endpoint: 192.168.56.40:22685
       access_key_id: minioadmin
       secret_access_key: minioadmin
       insecure: true
@@ -51,3 +51,10 @@ mimir_upstreams = [{
   name = "s3",
   port = 9000,
 }]
+mimir_task = {
+  driver   = "docker",
+  version  = "2.3.1",
+  cli_args = [
+    "--config.file=/etc/mimir/mimir.yml",
+  ]
+}

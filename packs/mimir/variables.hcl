@@ -56,7 +56,7 @@ variable "mimir_task" {
   })
   default = {
     driver   = "docker",
-    version  = "2.3.0-rc0",
+    version  = "latest",
     cli_args = [
       "--config.file=/etc/mimir/mimir.yml",
     ]

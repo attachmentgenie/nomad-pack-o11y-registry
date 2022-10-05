@@ -54,3 +54,9 @@ variable "env_vars" {
     value = string
   }))
 }
+
+variable "version_tag" {
+  description = "The docker image version. For options, see https://quay.io/repository/minio/minio"
+  type        = string
+  default     = "latest"
+}

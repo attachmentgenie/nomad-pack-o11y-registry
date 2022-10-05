@@ -1,6 +1,18 @@
 datacenters = [
   "lab",
 ]
+prometheus_task = {
+  driver   = "docker",
+  version  = "2.38.0",
+  cli_args = [
+    "--config.file=/etc/prometheus/config/prometheus.yml",
+    "--storage.tsdb.path=/prometheus",
+    "--web.listen-address=0.0.0.0:9090",
+    "--web.console.libraries=/usr/share/prometheus/console_libraries",
+    "--web.console.templates=/usr/share/prometheus/consoles",
+  ]
+}
+
 prometheus_task_app_prometheus_yaml = <<EOF
 ---
 global:

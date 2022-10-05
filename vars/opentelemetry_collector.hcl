@@ -1,6 +1,11 @@
 datacenters = [
   "lab",
 ]
+task_config = {
+  image   = "otel/opentelemetry-collector-contrib"
+  version = "0.61.0"
+  env     = {}
+}
 task_services = [
 {
   service_port_label = "otlp"
