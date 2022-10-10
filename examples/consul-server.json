@@ -1,0 +1,1 @@
+{"addresses":{"http":"127.0.0.1 192.168.1.10"},"advertise_addr":"192.168.1.10","bootstrap_expect":1,"connect":{"enabled":true},"data_dir":"/var/lib/consul","datacenter":"lab","ports":{"grpc":8502},"server":true,"telemetry":{"disable_hostname":true,"prometheus_retention_time":"31s"},"ui":true}

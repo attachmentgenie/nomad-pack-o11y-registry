@@ -32,6 +32,7 @@ job [[ template "job_name" . ]] {
       [[ if .my.register_consul_service ]]
       connect {
         sidecar_service {
+          tags = [""]
           proxy {
             [[ range $upstream := .my.mimir_upstreams ]]
             upstreams {

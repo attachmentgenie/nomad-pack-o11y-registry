@@ -67,6 +67,7 @@ job [[ template "job_name" . ]] {
       [[ if .tempo.register_consul_connect_enabled ]]
       connect {
         sidecar_service {
+          tags = [""]
           proxy {
             [[ range $upstream := .tempo.tempo_upstreams ]]
             upstreams {

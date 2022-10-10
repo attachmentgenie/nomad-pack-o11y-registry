@@ -36,7 +36,7 @@ schema_config:
       period: 168h
 storage_config:
   aws:
-    s3: http://minioadmin:minioadmin@192.168.56.40:22685/logs
+    s3: http://minioadmin:minioadmin@{{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/logs
     s3forcepathstyle: true
   boltdb:
     directory: /loki/index

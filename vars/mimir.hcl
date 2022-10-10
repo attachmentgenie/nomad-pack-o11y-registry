@@ -10,7 +10,7 @@ common:
   storage:
     backend: s3
     s3:
-      endpoint: 192.168.56.40:22685
+      endpoint: endpoint: {{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
       access_key_id: minioadmin
       secret_access_key: minioadmin
       insecure: true

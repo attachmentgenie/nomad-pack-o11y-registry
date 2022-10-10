@@ -50,7 +50,7 @@ storage:
       path: /tmp/tempo/blocks
     s3:
       bucket: traces
-      endpoint: 192.168.56.40:22685
+      endpoint: {{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
       access_key: minioadmin
       secret_key: minioadmin
       insecure: true

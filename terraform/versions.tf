@@ -18,7 +18,7 @@ provider "consul" {
 }
 
 provider "minio" {
-  minio_server       = "192.168.56.40:22685"
+  minio_server       = "s3.gaggl.vagrant"
   minio_access_key   = "minioadmin"
   minio_secret_key   = "minioadmin"
 }

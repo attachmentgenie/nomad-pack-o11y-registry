@@ -49,6 +49,7 @@ job [[ template "job_name" . ]] {
 
       connect {
         sidecar_service {
+          tags = [""]
           proxy {
             [[ range $upstream := .grafana.grafana_upstreams ]]
             upstreams {

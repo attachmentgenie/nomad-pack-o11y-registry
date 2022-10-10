@@ -33,7 +33,9 @@ job [[ template "full_job_name" . ]] {
       }
       [[- end ]]
       connect {
-        sidecar_service {}
+        sidecar_service {
+          tags = [""]
+        }
       }
     }
     [[ end ]]

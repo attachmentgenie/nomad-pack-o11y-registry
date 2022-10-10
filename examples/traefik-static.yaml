@@ -1,0 +1,35 @@
+---
+http:
+  routers:
+    consul:
+      rule: "Host(`consul.teambla.dev`)"
+      service: consul 
+    nomad:
+      rule: "Host(`nomad.teambla.dev`)"
+      service: nomad
+    traefik:
+      rule: "Host(`traefik.teambla.dev`)"
+      service: traefik
+    vault:
+      rule: "Host(`vault.teambla.dev`)"
+      service: vault
+  services:
+    consul:
+      loadBalancer:
+        servers:
+        - url: http://192.168.1.10:8500
+    nomad:
+      loadBalancer:
+        servers:
+        - url: http://192.168.1.10:4646
+    traefik:
+      loadBalancer:
+        servers:
+        - url: http://192.168.1.10:8080
+    vault:
+      loadBalancer:
+        servers:
+        - url: http://192.168.1.10:8200
+  serversTransports:
+    https-insecure:
+      insecureSkipVerify: true

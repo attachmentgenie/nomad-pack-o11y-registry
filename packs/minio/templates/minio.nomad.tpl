@@ -18,6 +18,9 @@ job [[ template "job_name" . ]] {
       port "s3" {
         to = 9000
       }
+      port "console" {
+        to = 9001
+      }
     }
 
     [[ if .my.register_consul_service ]]
@@ -34,7 +37,9 @@ job [[ template "job_name" . ]] {
       }
       [[ if .my.register_consul_service ]]
       connect {
-        sidecar_service {}
+        sidecar_service {
+          tags = [""]
+        }
       }
       [[ end ]]
     }
@@ -51,10 +56,12 @@ job [[ template "job_name" . ]] {
 
       config {
         image = "quay.io/minio/minio:[[ .my.version_tag ]]"
-        ports = ["s3"]
+        ports = ["s3","console"]
         args = [
           "server",
           "/data",
+          "--console-address",
+          ":9001"
         ]
       }
 

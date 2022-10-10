@@ -1,0 +1,48 @@
+---
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+api:
+  dashboard: true
+  insecure: true
+certificatesResolvers:
+  lets-encrypt:
+    acme:
+      email: bram@attachmentgenie.com
+      storage: "/etc/traefik/acme.json"
+      dnsChallenge:
+        provider: route53
+entryPoints:
+  http:
+    address: "192.168.1.30:80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          permanent: true
+          scheme: https
+  https:
+    address: "192.168.1.30:443"
+    http:
+      tls:
+        certResolver: lets-encrypt
+        domains:
+        - main: "*.teambla.dev"
+  traefik:
+    address: "192.168.1.10:8080"
+log:
+  filePath: "/var/log/traefik/traefik.log"
+metrics:
+  prometheus: {}
+ping: {}
+providers:
+  consulCatalog:
+    defaultRule: "Host(`{{ .Name }}.teambla.dev`)"
+    endpoint:
+      address: 127.0.0.1:8500
+    exposedByDefault: false
+  file:
+    filename: "/etc/traefik/static.yaml"
+    watch: true
+tracing:
+  zipkin:
+    httpEndpoint: http://tempo.service.consul:9411/api/v2/spans

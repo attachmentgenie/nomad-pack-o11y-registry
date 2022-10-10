@@ -29,6 +29,7 @@ job [[ template "full_job_name" . ]] {
       }
       connect {
         sidecar_service {
+          tags = [""]
           proxy {
             [[ range $upstream := $service.service_upstreams ]]
             upstreams {

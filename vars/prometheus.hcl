@@ -30,7 +30,7 @@ alerting:
         - alertmanager
 
 remote_write:
-  - url: http://192.168.1.11:25615/api/v1/push
+  - url: http://{{ range $i, $s := service "mimir" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/api/v1/push
 
 scrape_configs:
   - job_name: lab

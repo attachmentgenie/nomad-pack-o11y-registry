@@ -8,7 +8,7 @@ mimir_graphite_proxy_task = {
   version  = "latest",
   cli_args = [
     "-auth.enable=false",
-    " -write-endpoint http://192.168.1.11:25615/api/v1/push",
+    " -write-endpoint http://{{ range $i, $s := service \"mimir\" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/api/v1/push",
   ]
 }
 mimir_graphite_proxy_upstreams = [{

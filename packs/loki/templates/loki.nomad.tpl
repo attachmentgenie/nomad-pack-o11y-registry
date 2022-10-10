@@ -36,6 +36,7 @@ job [[ template "job_name" . ]] {
       [[ if .my.register_consul_connect_enabled ]]
       connect {
         sidecar_service {
+          tags = [""]
           proxy {
             [[ range $upstream := .my.loki_upstreams ]]
             upstreams {
@@ -50,7 +51,7 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
-    task "loki" {
+    task "server" {
       driver = "docker"
 
       config {

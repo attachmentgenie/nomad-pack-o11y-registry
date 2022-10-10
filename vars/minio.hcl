@@ -1,4 +1,7 @@
-consul_service_tags = ["metrics"]
+consul_service_tags = [
+  "traefik.enable=true",
+  "metrics"
+]
 datacenters = [
   "lab",
 ]
