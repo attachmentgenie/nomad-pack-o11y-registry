@@ -5,6 +5,15 @@ grafana_consul_tags = [
   "traefik.enable=true",
   "metrics"
 ]
+grafana_env_vars = [
+    {key = "GF_LOG_LEVEL", value = "DEBUG"},
+    {key = "GF_LOG_MODE", value = "console"},
+    {key = "GF_SERVER_HTTP_PORT", value = "$${NOMAD_PORT_http}"},
+    {key = "GF_PATHS_PROVISIONING", value = "/local/grafana/provisioning"},
+    {key = "GF_AUTH_ANONYMOUS_ENABLED", value = "true"},
+    {key = "GF_AUTH_ANONYMOUS_ORG_ROLE", value = "Admin"},
+    {key = "GF_AUTH_DISABLE_LOGIN_FORM", value = "true"},
+  ]
 grafana_task_artifacts = []
 grafana_task_config_datasources = <<EOF
 apiVersion: 1
@@ -45,4 +54,4 @@ grafana_upstreams = [{
   name = "tempo",
   port = 3200,
 }]
-grafana_version_tag = "9.1.7"
+grafana_version_tag = "9.2.0"

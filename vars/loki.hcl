@@ -12,50 +12,37 @@ loki_upstreams = [{
 }]
 loki_yaml = <<EOF
 auth_enabled: false
+server:
+  http_listen_port: 3100
 memberlist:
   join_members:
     - dnssrv+_loki-gossip._tcp.service.consul
-server:
-  http_listen_port: 3100
-ingester:
-  lifecycler:
-    address: 127.0.0.1
-    ring:
-      kvstore:
-        store: inmemory
-      replication_factor: 1
-    final_sleep: 0s
-  chunk_idle_period: 5m
-  chunk_retain_period: 30s
-  wal:
-    dir: /loki/wal
 schema_config:
   configs:
-  - from: 2020-05-15
-    store: boltdb
-    object_store: s3
-    schema: v11
-    index:
-      prefix: index_
-      period: 168h
-storage_config:
-  aws:
-    s3: http://minioadmin:minioadmin@{{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/logs
-    s3forcepathstyle: true
-  boltdb:
-    directory: /loki/index
-  filesystem:
-    directory: /loki/chunks
+    - from: 2021-08-01
+      store: boltdb-shipper
+      object_store: s3
+      schema: v11
+      index:
+        prefix: index_
+        period: 24h
+common:
+  path_prefix: /loki
+  replication_factor: 1
+  storage:
+    s3:
+      endpoint: {{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
+      insecure: true
+      bucketnames: logs
+      access_key_id: minioadmin
+      secret_access_key: minioadmin
+      s3forcepathstyle: true
+  ring:
+    kvstore:
+      store: memberlist
 ruler:
   storage:
-    type: local
-    local:
-      directory: /etc/loki/rules
-  rule_path: /loki/rules
-  alertmanager_url: http://localhost:9093
-limits_config:
-  enforce_metric_name: false
-  reject_old_samples: true
-  reject_old_samples_max_age: 168h
+    s3:
+      bucketnames: loki-rules
 EOF
 version_tag = "2.6.1"
