@@ -14,7 +14,7 @@ job [[ template "job_name" . ]] {
   [[- end ]][[- end ]]
 
   group "tempo" {
-    count = 1
+    count = [[ .my.count ]]
 
     network {
       mode = "bridge"
@@ -30,35 +30,27 @@ job [[ template "job_name" . ]] {
       }
       port "jaeger_thrift_compact" {
         to = 6831
-        static = 6831
       }
       port "jaeger_thrift_binary" {
         to = 6832
-        static = 6832
       }
       port "jaeger_thrift_http" {
         to = 14268
-        static = 14268
       }
       port "jaeger_grpc" {
         to = 14250
-        static = 14250
       }
       port "otlp_grpc" {
         to = 4317
-        static = 4317
       }
       port "otlp_http" {
         to = 4318
-        static = 4318
       }
       port "opencensus" {
         to = 55678
-        static = 55678
       }
       port "zipkin" {
         to = 9411
-        static = 9411
       }
     }
 
@@ -90,6 +82,11 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .tempo.consul_service_name ]]-grpc"
       port = "grpc"
+    }
+    service {
+      name = "zipkin"
+      tags = ["traefik.enable=true"]
+      port = "zipkin"
     }
     [[ end ]]
 
