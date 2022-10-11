@@ -5,12 +5,16 @@ consul_service_tags = [
   "traefik.enable=true",
   "metrics"
 ]
+count = 2
 loki_upstreams = [{
   name = "s3",
   port = 9000
 }]
 loki_yaml = <<EOF
 auth_enabled: false
+memberlist:
+  join_members:
+    - dnssrv+_loki-gossip._tcp.service.consul
 server:
   http_listen_port: 3100
 ingester:

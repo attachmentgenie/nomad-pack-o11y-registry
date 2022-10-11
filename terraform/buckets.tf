@@ -3,6 +3,11 @@ resource "minio_s3_bucket" "loki" {
   acl    = "public"
 }
 
+resource "minio_s3_bucket" "mimir-alertmanager" {
+  bucket = "alertmanager"
+  acl    = "public"
+}
+
 resource "minio_s3_bucket" "mimir-buckets" {
   bucket = "metrics"
   acl    = "public"

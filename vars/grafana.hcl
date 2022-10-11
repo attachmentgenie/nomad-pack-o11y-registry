@@ -34,31 +34,6 @@ datasources:
     access: proxy
     uid: tempo
     url: http://{{ range $i, $s := service "tempo" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
-  - name: Loki-Connect
-    type: loki
-    access: proxy
-    uid: loki-connect
-    url: http://localhost:3100
-    jsonData:
-      derivedFields:
-        - datasourceUid: tempo
-          matcherRegex: (?:traceID|trace_id)=(\w+)
-          name: TraceID
-          url: $$${__value.raw}
-  - name: Mimir-Connect
-    type: prometheus
-    access: proxy
-    uid: mimir-connect
-    url: http://localhost:9010/prometheus
-    jsonData:
-      exemplarTraceIdDestinations:
-        - name: traceID
-          datasourceUid: tempo
-  - name: Tempo-Connect
-    type: tempo
-    access: proxy
-    uid: tempo-connect
-    url: http://localhost:3200
 EOF
 grafana_upstreams = [{
   name = "loki",

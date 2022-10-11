@@ -12,6 +12,9 @@ job [[ template "job_name" . ]] {
       port "http" {
         to = 8080
       }
+      port "gossip" {
+        to = 7946
+      }
       port "grpc" {
         to = 9095
       }
@@ -45,6 +48,14 @@ job [[ template "job_name" . ]] {
       }
       [[ end ]]
     }
+    service {
+      name = "[[ .my.consul_service_name ]]-gossip"
+      port = "gossip"
+    }
+    service {
+      name = "[[ .my.consul_service_name ]]-grpc"
+      port = "grpc"
+    }
     [[ end ]]
 
     task "server" {
@@ -53,10 +64,12 @@ job [[ template "job_name" . ]] {
       config {
         image = "grafana/mimir:[[ .my.mimir_task.version ]]"
         args = [[ .my.mimir_task.cli_args | toPrettyJson ]]
-        ports = ["grpc","http"]
+        ports = ["gossip","grpc","http"]
+        [[- if ne .my.mimir_task_app_mimir_yaml "" ]]
         volumes = [
           "local/config:/etc/mimir",
         ]
+        [[- end ]]
       }
 
       [[- if ne .my.mimir_task_app_mimir_yaml "" ]]

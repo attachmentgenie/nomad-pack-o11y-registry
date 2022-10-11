@@ -57,9 +57,7 @@ variable "mimir_task" {
   default = {
     driver   = "docker",
     version  = "latest",
-    cli_args = [
-      "--config.file=/etc/mimir/mimir.yml",
-    ]
+    cli_args = []
   }
 }
 
@@ -78,51 +76,7 @@ variable "mimir_task_resources" {
 variable "mimir_task_app_mimir_yaml" {
   description = "The mimir configuration to pass to the task."
   type        = string
-  default     = <<EOF
-# Do not use this configuration in production.
-# It is for demonstration purposes only.
-multitenancy_enabled: false
-
-blocks_storage:
-  backend: filesystem
-  bucket_store:
-    sync_dir: /tmp/mimir/tsdb-sync
-  filesystem:
-    dir: /tmp/mimir/data/tsdb
-  tsdb:
-    dir: /tmp/mimir/tsdb
-
-compactor:
-  data_dir: /tmp/mimir/compactor
-  sharding_ring:
-    kvstore:
-      store: memberlist
-
-distributor:
-  ring:
-    instance_addr: 127.0.0.1
-    kvstore:
-      store: memberlist
-
-ingester:
-  ring:
-    instance_addr: 127.0.0.1
-    kvstore:
-      store: memberlist
-    replication_factor: 1
-
-ruler_storage:
-  backend: filesystem
-  filesystem:
-    dir: /tmp/mimir/rules
-
-server:
-  log_level: error
-
-store_gateway:
-  sharding_ring:
-    replication_factor: 1
-EOF
+  default     = ""
 }
 
 variable "mimir_upstreams" {

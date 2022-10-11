@@ -22,7 +22,9 @@ job [[ template "job_name" . ]] {
       port "http" {
         to = [[ .loki.http_port ]]
       }
-
+      port "gossip" {
+        to = 7946
+      }
       port "grpc" {
         to = [[ .loki.grpc_port ]]
       }
@@ -49,6 +51,14 @@ job [[ template "job_name" . ]] {
       }
       [[ end ]]
     }
+    service {
+      name = "[[ .my.consul_service_name ]]-gossip"
+      port = "gossip"
+    }
+    service {
+      name = "[[ .my.consul_service_name ]]-grpc"
+      port = "grpc"
+    }
     [[ end ]]
 
     task "server" {
@@ -56,6 +66,7 @@ job [[ template "job_name" . ]] {
 
       config {
         image = "grafana/loki:[[ .loki.version_tag ]]"
+        ports = ["gossip","grpc","http"]
         [[- if ne .loki.loki_yaml "" ]]
         args = [
           "--config.file=/etc/loki/config/loki.yml",

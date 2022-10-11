@@ -19,6 +19,9 @@ job [[ template "job_name" . ]] {
     network {
       mode = "bridge"
 
+      port "gossip" {
+        to = 7946
+      }
       port "grpc" {
         to = [[ .tempo.grpc_port ]]
       }
@@ -80,6 +83,14 @@ job [[ template "job_name" . ]] {
       }
       [[ end ]]
     }
+    service {
+      name = "[[ .tempo.consul_service_name ]]-gossip"
+      port = "gossip"
+    }
+    service {
+      name = "[[ .tempo.consul_service_name ]]-grpc"
+      port = "grpc"
+    }
     [[ end ]]
 
     task "tempo" {
@@ -87,6 +98,7 @@ job [[ template "job_name" . ]] {
 
       config {
         image = "grafana/tempo:[[ .tempo.version_tag ]]"
+        ports = ["gossip","grpc","http"]
         [[- if ne .tempo.tempo_yaml "" ]]
         args = [
           "--config.file=/etc/tempo/config/tempo.yml",

@@ -10,8 +10,12 @@ tempo_upstreams = [{
   port = 9000
 }]
 tempo_yaml = <<EOF
+multitenancy_enabled: false
 server:
   http_listen_port: 3200
+memberlist:
+  join_members:
+    - dnssrv+_tempo-gossip._tcp.service.consul
 distributor:
   receivers:
     jaeger:
@@ -26,36 +30,14 @@ distributor:
         http:
         grpc:
     opencensus:
-ingester:
-  trace_idle_period: 10s
-  max_block_bytes: 1_000_000
-  max_block_duration: 5m
-compactor:
-  compaction:
-    compaction_window: 1h
-    max_block_bytes: 100_000_000
-    block_retention: 1h
-    compacted_block_retention: 10m
 storage:
   trace:
     backend: s3
-    block:
-      bloom_filter_false_positive: .05
-      index_downsample_bytes: 1000
-      encoding: zstd
-    wal:
-      path: /tmp/tempo/wal
-      encoding: snappy
-    local:
-      path: /tmp/tempo/blocks
     s3:
       bucket: traces
       endpoint: {{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
       access_key: minioadmin
       secret_key: minioadmin
       insecure: true
-    pool:
-      max_workers: 100
-      queue_depth: 10000
 EOF
 version_tag = "1.5.0"
