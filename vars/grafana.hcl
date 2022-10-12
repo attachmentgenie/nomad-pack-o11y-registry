@@ -33,6 +33,7 @@ datasources:
     type: prometheus
     access: proxy
     uid: mimir
+    isDefault: true
     url: http://{{ range $i, $s := service "mimir" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/prometheus
     jsonData:
       exemplarTraceIdDestinations:
@@ -43,6 +44,16 @@ datasources:
     access: proxy
     uid: tempo
     url: http://{{ range $i, $s := service "tempo" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
+    jsonData:
+      httpMethod: GET
+      tracesToLogs:
+        datasourceUid: loki
+      serviceMap:
+        datasourceUid: mimir
+      nodeGraph:
+        enabled: true
+      lokiSearch:
+        datasourceUid: loki
 EOF
 grafana_upstreams = [{
   name = "loki",
