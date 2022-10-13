@@ -13,6 +13,7 @@ grafana_env_vars = [
     {key = "GF_AUTH_ANONYMOUS_ENABLED", value = "true"},
     {key = "GF_AUTH_ANONYMOUS_ORG_ROLE", value = "Admin"},
     {key = "GF_AUTH_DISABLE_LOGIN_FORM", value = "true"},
+    {key = "GF_INSTALL_PLUGINS", value = "grafana-oncall-app,grafana-piechart-panel,jdbranham-diagram-panel"},
   ]
 grafana_task_artifacts = []
 grafana_task_config_datasources = <<EOF
