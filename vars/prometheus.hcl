@@ -62,7 +62,6 @@ scrape_configs:
     consul_sd_configs:
     - server: "{{ env "attr.unique.network.ip-address" }}:8500"
       services:
-        - "nomad-server-lab"
         - "nomad-client-lab"
       tags:
         - "http"
