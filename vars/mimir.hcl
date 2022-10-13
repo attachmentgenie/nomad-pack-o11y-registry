@@ -10,18 +10,7 @@ mimir_task = {
   driver   = "docker",
   version  = "2.3.1",
   cli_args = [
-    "-target=all,alertmanager",
-    "-auth.multitenancy-enabled=false",
-    "-memberlist.join=dnssrv+_mimir-gossip._tcp.service.consul",
-    "-common.storage.backend=s3",
-    "-common.storage.s3.endpoint=192.168.56.40:30797",
-    "-common.storage.s3.access-key-id=minioadmin",
-    "-common.storage.s3.secret-access-key=minioadmin",
-    "-common.storage.s3.insecure=true",
-    "-alertmanager.configs.fallback=/etc/mimir/alertmanager.yml",
-    "-alertmanager-storage.s3.bucket-name=mimir-alertmanager",
-    "-blocks-storage.s3.bucket-name=metrics",
-    "-ruler-storage.s3.bucket-name=mimir-rules"
+    "-config.file=/etc/mimir/mimir.yml",
   ]
 }
 mimir_task_alertmanager_mimir_yaml = <<EOH
@@ -29,6 +18,32 @@ route:
   receiver: empty-receiver
 receivers:
   - name: 'empty-receiver'
+EOH
+mimir_task_app_mimir_yaml = <<EOH
+target: all,alertmanager
+multitenancy_enabled: false
+memberlist:
+  join_members:
+      - dnssrv+_mimir-gossip._tcp.service.consul
+alertmanager:
+  fallback_config_file: /etc/mimir/alertmanager.yml
+alertmanager_storage:
+  s3:
+    bucket_name: mimir-alertmanager
+blocks_storage:
+  s3:
+    bucket_name: metrics
+common:
+  storage:
+    backend: s3
+    s3:
+      access_key_id: minioadmin
+      endpoint: 192.168.56.40:30797
+      insecure: true
+      secret_access_key: minioadmin
+ruler_storage:
+  s3:
+    bucket_name: mimir-rules
 EOH
 mimir_upstreams = [{
   name = "s3",
