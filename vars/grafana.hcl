@@ -19,12 +19,20 @@ grafana_task_artifacts = []
 grafana_task_config_datasources = <<EOF
 apiVersion: 1
 datasources:
+  - name: Alertmanager
+    type: alertmanager
+    access: proxy
+    uid: alertmanager
+    url: http://{{ range $i, $s := service "mimir" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/alertmanager
+    jsonData:
+      implementation: prometheus
   - name: Loki
     type: loki
     access: proxy
     uid: loki
     url: http://{{ range $i, $s := service "loki" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
     jsonData:
+      alertmanagerUid: alertmanager
       derivedFields:
         - datasourceUid: tempo
           matcherRegex: (?:traceID|trace_id)=(\w+)
@@ -37,6 +45,7 @@ datasources:
     isDefault: true
     url: http://{{ range $i, $s := service "mimir" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/prometheus
     jsonData:
+      alertmanagerUid: alertmanager
       exemplarTraceIdDestinations:
         - name: traceID
           datasourceUid: tempo

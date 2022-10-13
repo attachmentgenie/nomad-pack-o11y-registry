@@ -65,22 +65,32 @@ job [[ template "job_name" . ]] {
         image = "grafana/mimir:[[ .my.mimir_task.version ]]"
         args = [[ .my.mimir_task.cli_args | toPrettyJson ]]
         ports = ["gossip","grpc","http"]
-        [[- if ne .my.mimir_task_app_mimir_yaml "" ]]
         volumes = [
           "local/config:/etc/mimir",
         ]
-        [[- end ]]
       }
 
       [[- if ne .my.mimir_task_app_mimir_yaml "" ]]
       template {
         data = <<EOH
-      [[ .my.mimir_task_app_mimir_yaml ]]
-      EOH
+[[ .my.mimir_task_app_mimir_yaml ]]
+EOH
 
         change_mode   = "signal"
         change_signal = "SIGHUP"
         destination   = "local/config/mimir.yml"
+      }
+      [[- end ]]
+
+      [[- if ne .my.mimir_task_alertmanager_mimir_yaml "" ]]
+      template {
+        data = <<EOH
+[[ .my.mimir_task_alertmanager_mimir_yaml ]]
+EOH
+
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+        destination   = "local/config/alertmanager.yml"
       }
       [[- end ]]
     }

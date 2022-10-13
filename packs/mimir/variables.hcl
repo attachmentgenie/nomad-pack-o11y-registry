@@ -73,6 +73,12 @@ variable "mimir_task_resources" {
   }
 }
 
+variable "mimir_task_alertmanager_mimir_yaml" {
+  description = "The mimir configuration to pass to the task."
+  type        = string
+  default     = ""
+}
+
 variable "mimir_task_app_mimir_yaml" {
   description = "The mimir configuration to pass to the task."
   type        = string
