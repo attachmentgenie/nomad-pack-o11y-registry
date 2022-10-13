@@ -46,7 +46,6 @@ metrics_generator:
   registry:
     external_labels:
       source: tempo
-      cluster: docker-compose
   storage:
     path: /tmp/tempo/generator/wal
     remote_write:

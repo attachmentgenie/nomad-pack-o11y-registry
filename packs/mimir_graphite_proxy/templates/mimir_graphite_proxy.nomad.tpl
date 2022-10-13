@@ -4,7 +4,7 @@ job [[ template "job_name" . ]] {
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
-  group "app" {
+  group "graphite_proxy" {
     count = [[ .my.count ]]
 
     network {
@@ -42,6 +42,26 @@ job [[ template "job_name" . ]] {
             }
             [[ end ]]
           }
+        }
+      }
+      [[ end ]]
+    }
+    service {
+      name = "[[ .my.consul_service_name ]]-health"
+      tags = [[ .my.consul_service_health_tags | toStringList ]]
+      port = "health"
+      check {
+        name     = "alive"
+        type     = "http"
+        port     = "health"
+        path     = "/healthz"
+        interval = "10s"
+        timeout  = "2s"
+      }
+      [[ if .my.register_consul_service ]]
+      connect {
+        sidecar_service {
+          tags = [""]
         }
       }
       [[ end ]]

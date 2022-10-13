@@ -4,7 +4,7 @@ job [[ template "job_name" . ]] {
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
-  group "app" {
+  group "mailhog" {
     count = [[ .my.count ]]
 
     network {

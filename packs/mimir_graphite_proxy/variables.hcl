@@ -47,6 +47,12 @@ variable "consul_service_tags" {
   default = []
 }
 
+variable "consul_service_health_tags" {
+  description = "The consul service name for the mimir_graphite_proxy health application"
+  type        = list(string)
+  default = []
+}
+
 variable "mimir_graphite_proxy_task" {
   description = "Details configuration options for the grafana_agent task."
   type        = object({

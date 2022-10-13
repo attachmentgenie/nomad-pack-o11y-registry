@@ -1,5 +1,5 @@
 consul_service_name = "graphite-proxy"
-consul_service_tags = ["metrics"]
+consul_service_health_tags = ["metrics"]
 datacenters = [
   "lab",
 ]

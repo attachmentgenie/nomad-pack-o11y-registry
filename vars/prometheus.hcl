@@ -45,6 +45,15 @@ scrape_configs:
     - source_labels: ['__meta_consul_service_id']
       regex: '.*-sidecar-proxy'
       action: drop
+  - job_name: "minio"
+    metrics_path: "/minio/prometheus/metrics"
+    consul_sd_configs:
+    - server: "{{ env "attr.unique.network.ip-address" }}:8500"
+      services:
+        - "s3"
+    relabel_configs:
+    - source_labels: [__meta_consul_service]
+      target_label: job
   - job_name: "nomad"
     metrics_path: "/v1/metrics"
     params:
@@ -53,18 +62,20 @@ scrape_configs:
     consul_sd_configs:
     - server: "{{ env "attr.unique.network.ip-address" }}:8500"
       services:
-        - "nomad"
-        - "nomad-client"
+        - "nomad-server-lab"
+        - "nomad-client-lab"
       tags:
         - "http"
     relabel_configs:
     - source_labels: [__meta_consul_service]
       target_label: job
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
 EOF
 prometheus_task_services = [{
   service_port_label = "http",
   service_name       = "prometheus",
-  service_tags       = ["metrics"],
   service_upstreams  = [{name = "mimir", port = 9009}],
   check_enabled      = true,
   check_path         = "/-/healthy",
