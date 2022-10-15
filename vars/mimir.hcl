@@ -38,7 +38,7 @@ common:
     backend: s3
     s3:
       access_key_id: minioadmin
-      endpoint: 192.168.56.40:30797
+      endpoint: {{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
       insecure: true
       secret_access_key: minioadmin
 ruler_storage:
