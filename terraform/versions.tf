@@ -13,12 +13,12 @@ terraform {
 }
 
 provider "consul" {
-  address    = "nomad.gaggl.vagrant:8500"
+  address    = "192.168.1.10:8500"
   datacenter = "lab"
 }
 
 provider "minio" {
-  minio_server       = "s3.gaggl.vagrant"
+  minio_server       = "192.168.1.11:31970"
   minio_access_key   = "minioadmin"
   minio_secret_key   = "minioadmin"
 }

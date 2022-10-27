@@ -6,7 +6,6 @@ grafana_consul_tags = [
   "metrics"
 ]
 grafana_env_vars = [
-    {key = "GF_LOG_LEVEL", value = "DEBUG"},
     {key = "GF_LOG_MODE", value = "console"},
     {key = "GF_SERVER_HTTP_PORT", value = "$${NOMAD_PORT_http}"},
     {key = "GF_PATHS_PROVISIONING", value = "/local/grafana/provisioning"},
