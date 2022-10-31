@@ -1,3 +1,6 @@
+consul_service_tags = [
+  "traefik.enable=true",
+]
 datacenters = [
   "lab",
 ]
