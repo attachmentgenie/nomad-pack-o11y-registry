@@ -1,0 +1,1 @@
+grafana phlare successfully deployed.

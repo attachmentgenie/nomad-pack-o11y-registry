@@ -74,4 +74,4 @@ grafana_upstreams = [{
   name = "tempo",
   port = 3200,
 }]
-grafana_version_tag = "9.2.0"
+grafana_version_tag = "9.2.3"

@@ -23,6 +23,11 @@ resource "minio_s3_bucket" "mimir-rules" {
   acl    = "public"
 }
 
+resource "minio_s3_bucket" "phlare" {
+  bucket = "profiling"
+  acl    = "public"
+}
+
 resource "minio_s3_bucket" "tempo" {
   bucket = "traces"
   acl    = "public"

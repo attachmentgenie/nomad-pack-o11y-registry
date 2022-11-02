@@ -18,7 +18,7 @@ provider "consul" {
 }
 
 provider "minio" {
-  minio_server       = "192.168.1.11:31970"
+  minio_server       = "192.168.1.11:21978"
   minio_access_key   = "minioadmin"
   minio_secret_key   = "minioadmin"
 }
