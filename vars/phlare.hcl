@@ -14,6 +14,11 @@ phlare_yaml = <<EOF
 memberlist:
   join_members:
     - dnssrv+_phlare-gossip._tcp.service.consul
+scrape_configs:
+  - job_name: "phlare"
+    scrape_interval: "15s"
+    static_configs:
+      - targets: ["127.0.0.1:4100"]
 storage:
   backend: s3
   s3:
