@@ -5,6 +5,34 @@ variable "job_name" {
   default = ""
 }
 
+variable "constraints" {
+  description = "Constraints to apply to the entire job."
+  type        = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "linux",
+      operator  = "",
+    },
+  ]
+}
+
+variable "resources" {
+  description = "The resource to assign to the my service task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 200,
+    memory = 256
+  }
+}
+
 variable "region" {
   description = "The region where jobs will be deployed"
   type        = string
@@ -23,18 +51,6 @@ variable "datacenters" {
   default     = ["dc1"]
 }
 
-variable "count" {
-  description = "The number of app instances to deploy"
-  type        = number
-  default     = 2
-}
-
-variable "message" {
-  description = "The message your application will render"
-  type        = string
-  default     = "Hello World!"
-}
-
 variable "register_consul_service" {
   description = "If you want to register a consul service for the job"
   type        = bool
@@ -44,20 +60,37 @@ variable "register_consul_service" {
 variable "consul_service_name" {
   description = "The consul service name for the grafana_oncall application"
   type        = string
-  default     = "webapp"
+  default     = "oncall"
 }
 
 variable "consul_service_tags" {
   description = "The consul service name for the grafana_oncall application"
   type        = list(string)
-  // defaults to integrate with Fabio or Traefik
-  // This routes at the root path "/", to route to this service from
-  // another path, change "urlprefix-/" to "urlprefix-/<PATH>" and
-  // "traefik.http.routers.http.rule=Path(∫/∫)" to
-  // "traefik.http.routers.http.rule=Path(∫/<PATH>∫)"
+  default = []
+}
+
+variable "oncall_env_vars" {
+  description = ""
+  type = list(object({
+    key   = string
+    value = string
+  }))
   default = [
-    "urlprefix-/",
-    "traefik.enable=true",
-    "traefik.http.routers.http.rule=Path(`/`)",
+    {key = "DATABASE_TYPE", value = "sqlite3"},
+    {key = "BROKER_TYPE", value = "redis"},
+    {key = "SECRET_KEY", value = "foobarbbqcorrecthorsebatterystaple"},
+    {key = "REDIS_URI", value = "redis://192.168.1.11:27432/0"},
+    {key = "DJANGO_SETTINGS_MODULE", value = "settings.hobby"},
+    {key = "CELERY_WORKER_QUEUE", value = "default,critical,long,slack,telegram,webhook,retry,celery"},
+    {key = "CELERY_WORKER_CONCURRENCY", value = "1"},
+    {key = "CELERY_WORKER_MAX_TASKS_PER_CHILD", value = "100"},
+    {key = "CELERY_WORKER_SHUTDOWN_INTERVAL", value = "65m"},
+    {key = "CELERY_WORKER_BEAT_ENABLED", value = "True"},
   ]
+}
+
+variable "version_tag" {
+  description = "The docker image version. For options, see https://hub.docker.com/grafana/loki"
+  type        = string
+  default     = "latest"
 }

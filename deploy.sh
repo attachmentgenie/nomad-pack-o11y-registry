@@ -11,7 +11,7 @@ wait-for-url() {
     echo "OK!"
 }
 
-nomad-pack run packs/minio -f vars/minio.hcl
+nomad-pack run minio -f vars/minio.hcl --registry=attachmentgenie
 wait-for-url https://s3.teambla.dev/minio/health/live
 
 (cd terraform; terraform init; terraform apply -auto-approve)
@@ -26,6 +26,8 @@ wait-for-url https://mimir.teambla.dev/ready
 wait-for-url https://phlare.teambla.dev/ready
 wait-for-url https://tempo.teambla.dev/ready
 
+nomad-pack run redis -f vars/redis.hcl --registry=default
+nomad-pack run packs/grafana_oncall -f vars/grafana_oncall.hcl
 nomad-pack run packs/grafana -f vars/grafana.hcl
 
 nomad-pack run packs/mimir_graphite_proxy -f vars/mimir_graphite_proxy.hcl
