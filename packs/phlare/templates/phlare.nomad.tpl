@@ -30,11 +30,26 @@ job [[ template "job_name" . ]] {
       }
     }
 
+    [[- if .my.phlare_volume ]]
+    volume "phlare" {
+      type = [[ .my.phlare_volume.type | quote ]]
+      read_only = false
+      source = [[ .my.phlare_volume.source | quote ]]
+    }
+    [[- end ]]
+    
     [[ if .phlare.register_consul_service ]]
     service {
       name = "[[ .phlare.consul_service_name ]]"
       tags = [[ .phlare.consul_service_tags | toStringList ]]
       port = "http"
+      
+      check {
+        type     = "http"
+        path     = "/ready"
+        interval = "10s"
+        timeout  = "2s"
+      }
       [[ if .phlare.register_consul_connect_enabled ]]
       connect {
         sidecar_service {
@@ -64,6 +79,14 @@ job [[ template "job_name" . ]] {
     task "phlare" {
       driver = "docker"
 
+      [[- if .my.phlare_volume ]]
+      volume_mount {
+        volume      = [[ .my.phlare_volume.name | quote ]]
+        destination = "/phlare"
+        read_only   = false
+      }
+      [[- end ]]
+      
       config {
         image = "grafana/phlare:[[ .phlare.version_tag ]]"
         ports = ["gossip","grpc","http"]

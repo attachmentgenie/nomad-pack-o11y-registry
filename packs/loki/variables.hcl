@@ -118,3 +118,12 @@ variable "loki_upstreams" {
     port = number
   }))
 }
+
+variable "loki_volume" {
+  description = "The resource to assign to the loki service task"
+  type = object({
+    name   = string
+    type   = string
+    source = string
+  })
+}

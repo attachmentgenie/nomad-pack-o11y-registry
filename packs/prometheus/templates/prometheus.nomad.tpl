@@ -14,6 +14,14 @@ job [[ template "full_job_name" . ]] {
   [[- end ]][[- end ]]
 
   group "prometheus" {
+    [[- if .my.prometheus_volume ]]
+    volume "prometheus" {
+      type = [[ .my.prometheus_volume.type | quote ]]
+      read_only = false
+      source = [[ .my.prometheus_volume.source | quote ]]
+    }
+    [[- end ]]
+
     [[- if .prometheus.prometheus_task_services ]]
     [[- range $idx, $service := .prometheus.prometheus_task_services ]]
     service {
@@ -55,6 +63,14 @@ job [[ template "full_job_name" . ]] {
 
     task "prometheus" {
       driver = "[[ .prometheus.prometheus_task.driver ]]"
+
+      [[- if .my.prometheus_volume ]]
+      volume_mount {
+        volume      = [[ .my.prometheus_volume.name | quote ]]
+        destination = "/prometheus"
+        read_only   = false
+      }
+      [[- end ]]
 
       config {
         image = "prom/prometheus:v[[ .prometheus.prometheus_task.version ]]"

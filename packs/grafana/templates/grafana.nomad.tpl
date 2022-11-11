@@ -65,13 +65,13 @@ job [[ template "job_name" . ]] {
     task "grafana" {
       driver = "docker"
 
-    [[- if .grafana.grafana_volume ]]
+      [[- if .grafana.grafana_volume ]]
       volume_mount {
-        volume      = "grafana"
+        volume      = [[ .grafana.grafana_volume.name | quote ]]
         destination = "/var/lib/grafana"
         read_only   = false
       }
-    [[- end ]]
+      [[- end ]]
 
       config {
         image = "grafana/grafana:[[ .grafana.grafana_version_tag ]]"

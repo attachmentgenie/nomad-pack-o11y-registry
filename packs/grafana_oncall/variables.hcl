@@ -79,7 +79,7 @@ variable "oncall_env_vars" {
     {key = "DATABASE_TYPE", value = "sqlite3"},
     {key = "BROKER_TYPE", value = "redis"},
     {key = "SECRET_KEY", value = "foobarbbqcorrecthorsebatterystaple"},
-    {key = "REDIS_URI", value = "redis://192.168.1.11:27432/0"},
+    {key = "REDIS_URI", value = "redis://redis.service.consul:6379/0"},
     {key = "DJANGO_SETTINGS_MODULE", value = "settings.hobby"},
     {key = "CELERY_WORKER_QUEUE", value = "default,critical,long,slack,telegram,webhook,retry,celery"},
     {key = "CELERY_WORKER_CONCURRENCY", value = "1"},

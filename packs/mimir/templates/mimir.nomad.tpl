@@ -20,15 +20,23 @@ job [[ template "job_name" . ]] {
       }
     }
 
+    [[- if .my.mimir_volume ]]
+    volume "mimir" {
+      type = [[ .my.mimir_volume.type | quote ]]
+      read_only = false
+      source = [[ .my.mimir_volume.source | quote ]]
+    }
+    [[- end ]]
+    
     [[ if .my.register_consul_service ]]
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
       port = "http"
+      
       check {
-        name     = "alive"
         type     = "http"
-        path     = "/"
+        path     = "/ready"
         interval = "10s"
         timeout  = "2s"
       }
@@ -60,6 +68,14 @@ job [[ template "job_name" . ]] {
 
     task "server" {
       driver = "[[ .my.mimir_task.driver ]]"
+
+      [[- if .my.mimir_volume ]]
+      volume_mount {
+        volume      = [[ .my.mimir_volume.name | quote ]]
+        destination = "/mimir"
+        read_only   = false
+      }
+      [[- end ]]
 
       config {
         image = "grafana/mimir:[[ .my.mimir_task.version ]]"

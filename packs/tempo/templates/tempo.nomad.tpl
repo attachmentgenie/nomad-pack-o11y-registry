@@ -53,12 +53,27 @@ job [[ template "job_name" . ]] {
         to = 9411
       }
     }
+    
+    [[- if .my.tempo_volume ]]
+    volume "tempo" {
+      type = [[ .my.tempo_volume.type | quote ]]
+      read_only = false
+      source = [[ .my.tempo_volume.source | quote ]]
+    }
+    [[- end ]]
 
     [[ if .tempo.register_consul_service ]]
     service {
       name = "[[ .tempo.consul_service_name ]]"
       tags = [[ .tempo.consul_service_tags | toStringList ]]
       port = "http"
+
+      check {
+        type     = "http"
+        path     = "/ready"
+        interval = "10s"
+        timeout  = "2s"
+      }
       [[ if .tempo.register_consul_connect_enabled ]]
       connect {
         sidecar_service {
@@ -93,6 +108,14 @@ job [[ template "job_name" . ]] {
     task "tempo" {
       driver = "docker"
 
+      [[- if .my.tempo_volume ]]
+      volume_mount {
+        volume      = [[ .my.tempo_volume.name | quote ]]
+        destination = "/tempo"
+        read_only   = false
+      }
+      [[- end ]]
+      
       config {
         image = "grafana/tempo:[[ .tempo.version_tag ]]"
         ports = ["gossip","grpc","http"]

@@ -72,7 +72,8 @@ variable "grafana_consul_tags" {
 variable "grafana_volume" {
   description = "The resource to assign to the Grafana service task"
   type = object({
-    type    = string
+    name   = string
+    type   = string
     source = string
   })
 }

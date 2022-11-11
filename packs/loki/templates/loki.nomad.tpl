@@ -30,12 +30,27 @@ job [[ template "job_name" . ]] {
       }
     }
 
+    [[- if .my.loki_volume ]]
+    volume "loki" {
+      type = [[ .my.loki_volume.type | quote ]]
+      read_only = false
+      source = [[ .my.loki_volume.source | quote ]]
+    }
+    [[- end ]]
+    
     [[ if .my.register_consul_service ]]
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
       port = "http"
       [[ if .my.register_consul_connect_enabled ]]
+
+      check {
+        type     = "http"
+        path     = "/ready"
+        interval = "10s"
+        timeout  = "2s"
+      }
       connect {
         sidecar_service {
           tags = [""]
@@ -63,6 +78,14 @@ job [[ template "job_name" . ]] {
 
     task "server" {
       driver = "docker"
+
+      [[- if .my.loki_volume ]]
+      volume_mount {
+        volume      = [[ .my.loki_volume.name | quote ]]
+        destination = "/loki"
+        read_only   = false
+      }
+      [[- end ]]
 
       config {
         image = "grafana/loki:[[ .loki.version_tag ]]"

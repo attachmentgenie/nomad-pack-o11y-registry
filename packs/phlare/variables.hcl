@@ -113,3 +113,12 @@ variable "phlare_upstreams" {
     port = number
   }))
 }
+
+variable "phlare_volume" {
+  description = "The resource to assign to the phlare service task"
+  type = object({
+    name   = string
+    type   = string
+    source = string
+  })
+}

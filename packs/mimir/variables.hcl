@@ -92,3 +92,12 @@ variable "mimir_upstreams" {
     port = number
   }))
 }
+
+variable "mimir_volume" {
+  description = "The resource to assign to the mimir service task"
+  type = object({
+    name   = string
+    type   = string
+    source = string
+  })
+}

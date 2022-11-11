@@ -9,17 +9,9 @@ HTTP.
 
 <!-- Include information about how to use your pack -->
 
-### Changing the Message
+### Generate grafana oncall token
 
-To change the message this server responds with, change the "message" variable
-when running the pack.
-
-```
-nomad-pack run grafana_oncall --var message="Hola Mundo!"
-```
-
-This tells Nomad Pack to tweak the `MESSAGE` environment variable that the
-service reads from.
+  python manage.py issue_invite_for_the_frontend --override
 
 ### Consul Service and Load Balancer Integration
 

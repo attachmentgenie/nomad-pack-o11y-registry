@@ -113,3 +113,12 @@ variable "tempo_upstreams" {
     port = number
   }))
 }
+
+variable "tempo_volume" {
+  description = "The resource to assign to the tempo service task"
+  type = object({
+    name   = string
+    type   = string
+    source = string
+  })
+}

@@ -160,3 +160,12 @@ variable "prometheus_task_services" {
     check_timeout      = "1s",
   }]
 }
+
+variable "prometheus_volume" {
+  description = "The resource to assign to the prometheus service task"
+  type = object({
+    name   = string
+    type   = string
+    source = string
+  })
+}
