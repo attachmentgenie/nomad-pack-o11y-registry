@@ -1,3 +1,0 @@
-datacenters = [
-  "lab",
-]

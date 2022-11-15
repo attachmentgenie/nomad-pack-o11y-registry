@@ -1,9 +1,6 @@
 consul_service_tags = [
   "traefik.enable=true",
 ]
-datacenters = [
-  "lab",
-]
 promlens_task = {
   driver   = "docker",
   version  = "latest",

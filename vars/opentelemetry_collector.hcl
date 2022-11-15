@@ -1,6 +1,3 @@
-datacenters = [
-  "lab",
-]
 task_config = {
   image   = "otel/opentelemetry-collector-contrib"
   version = "0.61.0"

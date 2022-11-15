@@ -1,6 +1,3 @@
-datacenters = [
-  "lab",
-]
 grafana_consul_tags = [
   "traefik.enable=true",
   "metrics"

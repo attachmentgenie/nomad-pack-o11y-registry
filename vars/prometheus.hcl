@@ -1,6 +1,3 @@
-datacenters = [
-  "lab",
-]
 prometheus_task = {
   driver   = "docker",
   version  = "2.38.0",

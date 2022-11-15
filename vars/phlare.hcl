@@ -1,6 +1,3 @@
-datacenters = [
-  "lab",
-]
 count = 2
 consul_service_tags = [
   "traefik.enable=true",

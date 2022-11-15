@@ -3,9 +3,6 @@ consul_service_tags = [
   "metrics"
 ]
 count = 2
-datacenters = [
-  "lab",
-]
 mimir_task = {
   driver   = "docker",
   version  = "2.3.1",

@@ -1,6 +1,3 @@
-datacenters = [
-  "lab",
-]
 oncall_env_vars = [
     {key = "DATABASE_TYPE", value = "sqlite3"},
     {key = "BROKER_TYPE", value = "redis"},
