@@ -5,7 +5,10 @@ consul_service_tags = [
 ]
 tempo_upstreams = [{
   name = "s3",
-  port = 9000
+  port = 9000,
+},{
+  name = "mimir",
+  port = 9009,
 }]
 tempo_yaml = <<EOF
 multitenancy_enabled: false
@@ -46,14 +49,14 @@ metrics_generator:
   storage:
     path: /tmp/tempo/generator/wal
     remote_write:
-      - url: http://{{ range $i, $s := service "mimir" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/api/v1/write
+      - url: http://localhost:8080/api/v1/write
         send_exemplars: true
 storage:
   trace:
     backend: s3
     s3:
       bucket: traces
-      endpoint: {{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
+      endpoint: localhost:9000
       access_key: minioadmin
       secret_key: minioadmin
       insecure: true

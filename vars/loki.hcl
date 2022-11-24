@@ -28,7 +28,7 @@ common:
   replication_factor: 1
   storage:
     s3:
-      endpoint: {{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
+      endpoint: localhost:9000
       insecure: true
       bucketnames: logs
       access_key_id: minioadmin

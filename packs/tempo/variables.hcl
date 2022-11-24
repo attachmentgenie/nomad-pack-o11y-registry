@@ -51,16 +51,22 @@ variable "version_tag" {
   default     = "latest"
 }
 
-variable "http_port" {
-  description = "The Nomad client port that routes to the tempo."
+variable "gossip_port" {
+  description = "The Nomad client port that routes to the Loki."
   type        = number
-  default     = 3200
+  default     = 7946
 }
 
 variable "grpc_port" {
   description = "The Nomad client port that routes to the tempo."
   type        = number
   default     = 9095
+}
+
+variable "http_port" {
+  description = "The Nomad client port that routes to the tempo."
+  type        = number
+  default     = 3200
 }
 
 variable "resources" {

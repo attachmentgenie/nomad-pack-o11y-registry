@@ -9,14 +9,14 @@ job [[ template "job_name" . ]] {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 8080
-      }
       port "gossip" {
-        to = 7946
+        to = [[ .my.gossip_port ]]
       }
       port "grpc" {
-        to = 9095
+        to = [[ .my.grpc_port ]]
+      }
+      port "http" {
+        to = [[ .my.http_port ]]
       }
     }
 
@@ -45,6 +45,7 @@ job [[ template "job_name" . ]] {
         sidecar_service {
           tags = [""]
           proxy {
+            local_service_port = [[ .my.http_port ]]
             [[ range $upstream := .my.mimir_upstreams ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]

@@ -35,7 +35,7 @@ common:
     backend: s3
     s3:
       access_key_id: minioadmin
-      endpoint: {{ range $i, $s := service "s3" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
+      endpoint: localhost:9000
       insecure: true
       secret_access_key: minioadmin
 ruler_storage:

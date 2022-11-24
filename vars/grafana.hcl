@@ -18,14 +18,14 @@ datasources:
     type: alertmanager
     access: proxy
     uid: alertmanager
-    url: http://{{ range $i, $s := service "mimir" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/alertmanager
+    url: http://localhost:9009/alertmanager
     jsonData:
       implementation: prometheus
   - name: Loki
     type: loki
     access: proxy
     uid: loki
-    url: http://{{ range $i, $s := service "loki" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
+    url: http://localhost:3100
     jsonData:
       alertmanagerUid: alertmanager
       derivedFields:
@@ -38,7 +38,7 @@ datasources:
     access: proxy
     uid: mimir
     isDefault: true
-    url: http://{{ range $i, $s := service "mimir" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}/prometheus
+    url: http://localhost:9009/prometheus
     jsonData:
       alertmanagerUid: alertmanager
       exemplarTraceIdDestinations:
@@ -48,7 +48,7 @@ datasources:
     type: tempo
     access: proxy
     uid: tempo
-    url: http://{{ range $i, $s := service "tempo" }}{{ if eq $i 0 }}{{.Address}}:{{.Port}}{{end}}{{end}}
+    url: http://localhost:3200
     jsonData:
       httpMethod: GET
       tracesToLogs:

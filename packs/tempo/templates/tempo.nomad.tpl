@@ -1,9 +1,9 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
   [[ template "namespace" . ]]
-  datacenters = [[ .tempo.datacenters | toStringList ]]
+  datacenters = [[ .my.datacenters | toStringList ]]
 
-  [[ if .tempo.constraints ]][[ range $idx, $constraint := .tempo.constraints ]]
+  [[ if .my.constraints ]][[ range $idx, $constraint := .my.constraints ]]
   constraint {
     attribute = [[ $constraint.attribute | quote ]]
     value     = [[ $constraint.value | quote ]]
@@ -20,13 +20,13 @@ job [[ template "job_name" . ]] {
       mode = "bridge"
 
       port "gossip" {
-        to = 7946
+        to = [[ .my.gossip_port ]]
       }
       port "grpc" {
-        to = [[ .tempo.grpc_port ]]
+        to = [[ .my.grpc_port ]]
       }
       port "http" {
-        to = [[ .tempo.http_port ]]
+        to = [[ .my.http_port ]]
       }
       port "jaeger_thrift_compact" {
         to = 6831
@@ -62,10 +62,10 @@ job [[ template "job_name" . ]] {
     }
     [[- end ]]
 
-    [[ if .tempo.register_consul_service ]]
+    [[ if .my.register_consul_service ]]
     service {
-      name = "[[ .tempo.consul_service_name ]]"
-      tags = [[ .tempo.consul_service_tags | toStringList ]]
+      name = "[[ .my.consul_service_name ]]"
+      tags = [[ .my.consul_service_tags | toStringList ]]
       port = "http"
 
       check {
@@ -74,12 +74,13 @@ job [[ template "job_name" . ]] {
         interval = "10s"
         timeout  = "2s"
       }
-      [[ if .tempo.register_consul_connect_enabled ]]
+      [[ if .my.register_consul_connect_enabled ]]
       connect {
         sidecar_service {
           tags = [""]
           proxy {
-            [[ range $upstream := .tempo.tempo_upstreams ]]
+            local_service_port = [[ .my.http_port ]]
+            [[ range $upstream := .my.tempo_upstreams ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -91,11 +92,11 @@ job [[ template "job_name" . ]] {
       [[ end ]]
     }
     service {
-      name = "[[ .tempo.consul_service_name ]]-gossip"
+      name = "[[ .my.consul_service_name ]]-gossip"
       port = "gossip"
     }
     service {
-      name = "[[ .tempo.consul_service_name ]]-grpc"
+      name = "[[ .my.consul_service_name ]]-grpc"
       port = "grpc"
     }
     service {
@@ -117,9 +118,9 @@ job [[ template "job_name" . ]] {
       [[- end ]]
       
       config {
-        image = "grafana/tempo:[[ .tempo.version_tag ]]"
+        image = "grafana/tempo:[[ .my.version_tag ]]"
         ports = ["gossip","grpc","http"]
-        [[- if ne .tempo.tempo_yaml "" ]]
+        [[- if ne .my.tempo_yaml "" ]]
         args = [
           "--config.file=/etc/tempo/config/tempo.yml",
         ]
@@ -130,14 +131,14 @@ job [[ template "job_name" . ]] {
       }
 
       resources {
-        cpu    = [[ .tempo.resources.cpu ]]
-        memory = [[ .tempo.resources.memory ]]
+        cpu    = [[ .my.resources.cpu ]]
+        memory = [[ .my.resources.memory ]]
       }
 
-      [[- if ne .tempo.tempo_yaml "" ]]
+      [[- if ne .my.tempo_yaml "" ]]
       template {
         data = <<EOH
-[[ .tempo.tempo_yaml ]]
+[[ .my.tempo_yaml ]]
 EOH
 
         change_mode   = "signal"
