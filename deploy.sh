@@ -26,7 +26,7 @@ wait-for-url https://mimir.teambla.dev/ready
 wait-for-url https://phlare.teambla.dev/ready
 wait-for-url https://tempo.teambla.dev/ready
 
-nomad-pack run redis -f vars/redis.hcl  -f vars/lab.hcl --registry=default
+nomad-pack run redis -f vars/redis.hcl  -f vars/lab.hcl --registry=attachmentgenie
 nomad-pack run packs/grafana_oncall -f vars/grafana_oncall.hcl  -f vars/lab.hcl
 nomad-pack run packs/grafana -f vars/grafana.hcl -f vars/lab.hcl
 

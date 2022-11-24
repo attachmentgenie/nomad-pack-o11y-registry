@@ -33,7 +33,7 @@ job [[ template "job_name" . ]] {
         sidecar_service {
           tags = [""]
           proxy {
-            [[ range $upstream := .my.my_upstreams ]]
+            [[ range $upstream := .my.upstreams ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]

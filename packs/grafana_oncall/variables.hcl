@@ -57,6 +57,12 @@ variable "register_consul_service" {
   default     = true
 }
 
+variable "register_consul_connect_enabled" {
+  description = "If you want to run the consul service with connect enabled. This will only work with register_consul_service = true"
+  type        = bool
+  default     = true
+}
+
 variable "consul_service_name" {
   description = "The consul service name for the grafana_oncall application"
   type        = string
@@ -87,6 +93,14 @@ variable "oncall_env_vars" {
     {key = "CELERY_WORKER_SHUTDOWN_INTERVAL", value = "65m"},
     {key = "CELERY_WORKER_BEAT_ENABLED", value = "True"},
   ]
+}
+
+variable "upstreams" {
+  description = ""
+  type = list(object({
+    name = string
+    port = number
+  }))
 }
 
 variable "version_tag" {
