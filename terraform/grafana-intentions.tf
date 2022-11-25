@@ -8,6 +8,12 @@ resource "consul_config_entry" "oncall-dashboard" {
       Name       = data.consul_service.oncall.name
       Precedence = 9
       Type       = "consul"
+      },
+      {
+        Action     = "allow"
+        Name       = data.consul_service.promlens.name
+        Precedence = 9
+        Type       = "consul"
     }]
   })
 }

@@ -10,6 +10,10 @@ data "consul_service" "oncall" {
   name = "oncall"
 }
 
+data "consul_service" "promlens" {
+  name = "promlens"
+}
+
 data "consul_service" "mimir" {
   name = "mimir"
 }

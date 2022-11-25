@@ -2,12 +2,12 @@ terraform {
   required_version = "~> 1.2"
   required_providers {
     consul = {
-      source = "hashicorp/consul"
-      version = "2.15.1"
+      source  = "hashicorp/consul"
+      version = "2.16.2"
     }
     minio = {
-      source = "aminueza/minio"
-      version = "1.6.0"
+      source  = "aminueza/minio"
+      version = "1.9.1"
     }
   }
 }
@@ -18,7 +18,7 @@ provider "consul" {
 }
 
 provider "minio" {
-  minio_server       = "192.168.1.11:25123"
-  minio_access_key   = "minioadmin"
-  minio_secret_key   = "minioadmin"
+  minio_server   = "192.168.1.11:25123"
+  minio_user     = "minioadmin"
+  minio_password = "minioadmin"
 }

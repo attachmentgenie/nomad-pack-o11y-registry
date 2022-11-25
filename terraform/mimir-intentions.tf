@@ -8,18 +8,18 @@ resource "consul_config_entry" "dashboard-metrics" {
       Name       = data.consul_service.grafana.name
       Precedence = 9
       Type       = "consul"
-    },
-    {
-      Action     = "allow"
-      Name       = data.consul_service.mimir_graphite_proxy.name
-      Precedence = 9
-      Type       = "consul"
-    },
-    {
-      Action     = "allow"
-      Name       = data.consul_service.prometheus.name
-      Precedence = 9
-      Type       = "consul"
+      },
+      {
+        Action     = "allow"
+        Name       = data.consul_service.mimir_graphite_proxy.name
+        Precedence = 9
+        Type       = "consul"
+      },
+      {
+        Action     = "allow"
+        Name       = data.consul_service.prometheus.name
+        Precedence = 9
+        Type       = "consul"
     }]
   })
 }
