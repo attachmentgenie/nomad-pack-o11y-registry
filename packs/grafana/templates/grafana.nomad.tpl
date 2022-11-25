@@ -1,7 +1,7 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
   [[ template "namespace" . ]]
-  datacenters = [[ .grafana.datacenters | toStringList ]]
+  datacenters = [[ .my.datacenters | toStringList ]]
 
   // must have linux for network mode
   constraint {
@@ -15,43 +15,44 @@ job [[ template "job_name" . ]] {
     network {
       mode = "bridge"
 
-    [[- if .grafana.dns ]]
+    [[- if .my.dns ]]
     dns {
-      [[- if .grafana.dns.servers ]]
-        servers = [[ .grafana.dns.servers | toPrettyJson ]]
+      [[- if .my.dns.servers ]]
+        servers = [[ .my.dns.servers | toPrettyJson ]]
       [[- end ]]
-      [[- if .grafana.dns.searches ]]
-        searches = [[ .grafana.dns.searches | toPrettyJson ]]
+      [[- if .my.dns.searches ]]
+        searches = [[ .my.dns.searches | toPrettyJson ]]
       [[- end ]]
-      [[- if .grafana.dns.options ]]
-        options = [[ .grafana.dns.options | toPrettyJson ]]
+      [[- if .my.dns.options ]]
+        options = [[ .my.dns.options | toPrettyJson ]]
       [[- end ]]
     }
     [[- end ]]
 
       port "http" {
-        to = [[ .grafana.grafana_http_port ]]
+        to = [[ .my.grafana_http_port ]]
       }
     }
 
-    [[- if .grafana.grafana_volume ]]
+    [[- if .my.grafana_volume ]]
     volume "grafana" {
-      type = [[ .grafana.grafana_volume.type | quote ]]
+      type = [[ .my.grafana_volume.type | quote ]]
       read_only = false
-      source = [[ .grafana.grafana_volume.source | quote ]]
+      source = [[ .my.grafana_volume.source | quote ]]
     }
     [[- end ]]
 
     service {
       name = "grafana"
       port = "http"
-      tags = [[ .grafana.grafana_consul_tags | toStringList ]]
+      tags = [[ .my.grafana_consul_tags | toStringList ]]
 
       connect {
         sidecar_service {
           tags = [""]
           proxy {
-            [[ range $upstream := .grafana.grafana_upstreams ]]
+            local_service_port = [[ .my.grafana_http_port ]]
+            [[ range $upstream := .my.grafana_upstreams ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -65,32 +66,32 @@ job [[ template "job_name" . ]] {
     task "grafana" {
       driver = "docker"
 
-      [[- if .grafana.grafana_volume ]]
+      [[- if .my.grafana_volume ]]
       volume_mount {
-        volume      = [[ .grafana.grafana_volume.name | quote ]]
+        volume      = [[ .my.grafana_volume.name | quote ]]
         destination = "/var/lib/grafana"
         read_only   = false
       }
       [[- end ]]
 
       config {
-        image = "grafana/grafana:[[ .grafana.grafana_version_tag ]]"
+        image = "grafana/grafana:[[ .my.grafana_version_tag ]]"
         ports = ["http"]
       }
 
       resources {
-        cpu    = [[ .grafana.grafana_resources.cpu ]]
-        memory = [[ .grafana.grafana_resources.memory ]]
+        cpu    = [[ .my.grafana_resources.cpu ]]
+        memory = [[ .my.grafana_resources.memory ]]
       }
 
       env {
-        [[- range $var := .grafana.grafana_env_vars ]]
+        [[- range $var := .my.grafana_env_vars ]]
         [[ $var.key ]] = "[[ $var.value ]]"
         [[- end ]]
       }
 
-      [[- if .grafana.grafana_task_artifacts ]]
-        [[- range $artifact := .grafana.grafana_task_artifacts ]]
+      [[- if .my.grafana_task_artifacts ]]
+        [[- range $artifact := .my.grafana_task_artifacts ]]
 
       artifact {
         source      = [[ $artifact.source | quote ]]
@@ -108,29 +109,29 @@ job [[ template "job_name" . ]] {
         [[- end ]]
       [[- end ]]
 
-      [[- if .grafana.grafana_task_config_dashboards ]]
+      [[- if .my.grafana_task_config_dashboards ]]
       template {
         data = <<EOF
-[[ .grafana.grafana_task_config_dashboards ]]
+[[ .my.grafana_task_config_dashboards ]]
 EOF
         destination = "/local/grafana/provisioning/dashboards/dashboards.yaml"
       }
       [[- end ]]
 
-      [[- if .grafana.grafana_task_config_datasources ]]
+      [[- if .my.grafana_task_config_datasources ]]
       template {
         data = <<EOF
-[[ .grafana.grafana_task_config_datasources ]]
+[[ .my.grafana_task_config_datasources ]]
 EOF
         destination = "/local/grafana/provisioning/datasources/datasources.yaml"
       }
       [[- end ]]
 
-      [[- if .grafana.grafana_task_config_plugins ]]
+      [[- if .my.grafana_task_config_plugins ]]
 
       template {
         data = <<EOF
-[[ .grafana.grafana_task_config_plugins ]]
+[[ .my.grafana_task_config_plugins ]]
 EOF
         destination = "/local/grafana/provisioning/plugins/plugins.yml"
       }

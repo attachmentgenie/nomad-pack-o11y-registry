@@ -6,6 +6,10 @@ data "consul_service" "loki" {
   name = "loki"
 }
 
+data "consul_service" "oncall" {
+  name = "oncall"
+}
+
 data "consul_service" "mimir" {
   name = "mimir"
 }

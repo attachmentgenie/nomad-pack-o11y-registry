@@ -67,7 +67,10 @@ grafana_upstreams = [{
   name = "mimir",
   port = 9009,
 },{
+  name = "oncall",
+  port = 8080,
+},{
   name = "tempo",
   port = 3200,
 }]
-grafana_version_tag = "9.2.3"
+grafana_version_tag = "9.2.6"
