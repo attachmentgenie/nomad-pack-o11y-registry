@@ -1,6 +1,6 @@
 app {
   url    = "https://github.com/open-telemetry/opentelemetry-collector"
-  author = "OpenTelemetry"
+  author = "CNCF"
 }
 
 pack {
