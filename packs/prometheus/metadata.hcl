@@ -1,6 +1,6 @@
 app {
   url    = "https://prometheus.io/"
-  author = "Prometheus"
+  author = "CNCF"
 }
 
 pack {

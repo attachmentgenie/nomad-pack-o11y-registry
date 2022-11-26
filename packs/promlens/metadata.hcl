@@ -1,6 +1,6 @@
 app {
   url    = "https://promlens.com/"
-  author = "PromLabs"
+  author = "CNCF"
 }
 
 pack {
