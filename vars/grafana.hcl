@@ -6,6 +6,8 @@ grafana_env_vars = [
     {key = "GF_LOG_MODE", value = "console"},
     {key = "GF_SERVER_HTTP_PORT", value = "$${NOMAD_PORT_http}"},
     {key = "GF_PATHS_PROVISIONING", value = "/local/grafana/provisioning"},
+    {key = "GF_ALERTING_ENABLED", value = "false"},
+    {key = "GF_UNIFIED_ALERTING_ENABLED", value = "false"},
     {key = "GF_AUTH_ANONYMOUS_ENABLED", value = "true"},
     {key = "GF_AUTH_ANONYMOUS_ORG_ROLE", value = "Admin"},
     {key = "GF_INSTALL_PLUGINS", value = "grafana-oncall-app,grafana-piechart-panel,jdbranham-diagram-panel"},
@@ -41,10 +43,12 @@ datasources:
     isDefault: true
     url: http://localhost:9009/prometheus
     jsonData:
-      alertmanagerUid: alertmanager
       exemplarTraceIdDestinations:
         - name: traceID
           datasourceUid: tempo
+      manageAlerts: false
+      prometheusType: Mimir
+      prometheusVersion: 2.4.0
   - name: Phlare
     type: phlare
     access: proxy
