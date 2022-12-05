@@ -1,6 +1,6 @@
 task_config = {
   image   = "otel/opentelemetry-collector-contrib"
-  version = "0.61.0"
+  version = "0.66.0"
   env     = {}
 }
 task_services = [

@@ -1,6 +1,6 @@
 prometheus_task = {
   driver   = "docker",
-  version  = "2.38.0",
+  version  = "2.40.5",
   cli_args = [
     "--config.file=/etc/prometheus/config/prometheus.yml",
     "--storage.tsdb.path=/prometheus",

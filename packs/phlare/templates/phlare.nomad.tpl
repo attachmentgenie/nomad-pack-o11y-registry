@@ -55,6 +55,7 @@ job [[ template "job_name" . ]] {
         sidecar_service {
           tags = [""]
           proxy {
+            local_service_port = [[ .phlare.http_port ]]
             [[ range $upstream := .phlare.phlare_upstreams ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]

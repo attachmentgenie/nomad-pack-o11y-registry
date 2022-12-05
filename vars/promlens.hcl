@@ -3,7 +3,7 @@ consul_service_tags = [
 ]
 promlens_task = {
   driver   = "docker",
-  version  = "latest",
+  version  = "v0.3.0",
   cli_args = [
     "--grafana.url=http://localhost:3000",
     "--grafana.api-token=eyJrIjoiakhKWW9ndTJaMTU5WFhvMTQwV1ROWTdPUExqaTdseHgiLCJuIjoicHJvbWxlbnMiLCJpZCI6MX0="
