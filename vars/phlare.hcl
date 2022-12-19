@@ -25,4 +25,4 @@ storage:
     secret_access_key: minioadmin
     insecure: true
 EOF
-version_tag = "0.1.0"
+version_tag = "0.1.1"

@@ -56,6 +56,12 @@ variable "privileged_mode" {
   default     = false
 }
 
+variable "register_consul_service" {
+  description = "If you want to register a consul service for the job"
+  type        = bool
+  default     = true
+}
+
 variable "task_config" {
   description = "The OpenTelemetry Collector task config options."
   type = object({
@@ -140,7 +146,7 @@ variable "config_yaml_location" {
   default     = "local/otel/config.yaml"
 }
 
-variable "config_yaml" {
+variable "otel_config_yaml" {
   description = "The OpenTelemetry Collector configuration to pass to the task."
   type        = string
   default     = <<EOF
@@ -201,6 +207,7 @@ variable "additional_templates" {
 variable "task_services" {
   description = "Configuration options of the OpenTelemetry Collector services and checks."
   type = list(object({
+    service_port       = string
     service_port_label = string
     service_name       = string
     service_tags       = list(string)
@@ -209,86 +216,108 @@ variable "task_services" {
     check_path         = string
     check_interval     = string
     check_timeout      = string
+    connect_enabled    = bool
+    connect_upstreams  = list(object({
+      name = string
+      port = number
+    }))
   }))
   default = [
     {
+      service_port       = 4317
       service_port_label = "otlp"
-      service_name       = "opentelemetry-collector"
+      service_name       = "otlp"
       service_tags       = []
       check_enabled      = false
       check_type         = "tcp"
       check_path         = "/"
       check_interval     = "15s"
       check_timeout      = "3s"
+      connect_enabled    = false
+      connect_upstreams  = []
     },
     {
       service_port_label = "otlphttp"
-      service_name       = "opentelemetry-collector"
-      service_tags       = ["otlphttp"]
+      service_name       = "otlphttp"
+      service_tags       = []
       check_enabled      = false
       check_type         = "http"
       check_path         = "/"
       check_interval     = "15s"
       check_timeout      = "3s"
+      connect_enabled    = false
+      connect_upstreams  = []
     },
     {
       service_port_label = "metrics"
-      service_name       = "opentelemetry-collector"
-      service_tags       = ["prometheus"]
+      service_name       = "opentelemetry-metrics"
+      service_tags       = []
       check_enabled      = false
       check_type         = "http"
       check_path         = "/"
       check_interval     = "15s"
       check_timeout      = "3s"
+      connect_enabled    = false
+      connect_upstreams  = []
     },
     {
       service_port_label = "zipkin"
-      service_name       = "opentelemetry-collector"
-      service_tags       = ["zipkin"]
+      service_name       = "zipkin"
+      service_tags       = []
       check_enabled      = false
       check_type         = "http"
       check_path         = "/"
       check_interval     = "15s"
       check_timeout      = "3s"
+      connect_enabled    = false
+      connect_upstreams  = []
     },
     {
       service_port_label = "healthcheck"
-      service_name       = "opentelemetry-collector"
-      service_tags       = ["health"]
+      service_name       = "opentelemetry-health"
+      service_tags       = []
       check_enabled      = true
       check_type         = "http"
       check_path         = "/"
       check_interval     = "15s"
       check_timeout      = "3s"
+      connect_enabled    = false
+      connect_upstreams  = []
     },
     {
       service_port_label = "jaeger-grpc"
-      service_name       = "opentelemetry-collector"
-      service_tags       = ["jaeger-grpc"]
+      service_name       = "jaeger-grpc"
+      service_tags       = []
       check_enabled      = false
       check_type         = "tcp"
       check_path         = "/"
       check_interval     = "15s"
       check_timeout      = "3s"
+      connect_enabled    = false
+      connect_upstreams  = []
     },
     {
       service_port_label = "jaeger-thrift-http"
-      service_name       = "opentelemetry-collector"
-      service_tags       = ["jaeger-thrift-http"]
+      service_name       = "jaeger-thrift-http"
+      service_tags       = []
       check_enabled      = false
       check_type         = "http"
       check_path         = "/"
       check_interval     = "15s"
       check_timeout      = "3s"
+      connect_enabled    = false
+      connect_upstreams  = []
     },
     {
       service_port_label = "zpages"
-      service_name       = "opentelemetry-collector"
-      service_tags       = ["zpages"]
+      service_name       = "zpages"
+      service_tags       = []
       check_enabled      = false
       check_type         = "http"
       check_path         = "/"
       check_interval     = "15s"
       check_timeout      = "3s"
-  }]
+      connect_enabled    = false
+      connect_upstreams  = []
+    }]
 }

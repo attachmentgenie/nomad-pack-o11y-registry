@@ -42,4 +42,4 @@ ruler:
     s3:
       bucketnames: loki-rules
 EOF
-version_tag = "2.7.0"
+version_tag = "2.7.1"

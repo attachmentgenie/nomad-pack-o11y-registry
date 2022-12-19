@@ -18,7 +18,7 @@ provider "consul" {
 }
 
 provider "minio" {
-  minio_server   = "192.168.1.11:27826"
+  minio_server   = "192.168.1.11:29192"
   minio_user     = "minioadmin"
   minio_password = "minioadmin"
 }

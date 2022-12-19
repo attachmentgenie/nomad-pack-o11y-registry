@@ -6,7 +6,7 @@ promlens_task = {
   version  = "v0.3.0",
   cli_args = [
     "--grafana.url=http://localhost:3000",
-    "--grafana.api-token=eyJrIjoiakhKWW9ndTJaMTU5WFhvMTQwV1ROWTdPUExqaTdseHgiLCJuIjoicHJvbWxlbnMiLCJpZCI6MX0="
+    "--grafana.api-token=glsa_ntddQFFtaRNaodsAdM3Rzjn01ZL1gt9z_a7c1e946"
   ]
 }
 promlens_upstreams = [{

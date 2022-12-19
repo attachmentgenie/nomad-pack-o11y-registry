@@ -100,8 +100,25 @@ job [[ template "job_name" . ]] {
       port = "grpc"
     }
     service {
-      name = "zipkin"
-      tags = ["traefik.enable=true"]
+      name = "[[ .my.consul_service_name ]]-otlp-grpc"
+      port = "otlp_grpc"
+      [[ if .my.register_consul_connect_enabled ]]
+      connect {
+        sidecar_service {
+          tags = [""]
+          proxy {
+            local_service_port = 4317
+          }
+        }
+      }
+      [[ end ]]
+    }
+    service {
+      name = "[[ .my.consul_service_name ]]-otlp-http"
+      port = "otlp_http"
+    }
+    service {
+      name = "[[ .my.consul_service_name ]]-zipkin"
       port = "zipkin"
     }
     [[ end ]]

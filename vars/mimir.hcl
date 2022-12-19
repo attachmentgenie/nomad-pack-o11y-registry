@@ -5,7 +5,7 @@ consul_service_tags = [
 count = 2
 mimir_task = {
   driver   = "docker",
-  version  = "2.4.0",
+  version  = "2.5.0",
   cli_args = [
     "-config.file=/etc/mimir/mimir.yml",
   ]

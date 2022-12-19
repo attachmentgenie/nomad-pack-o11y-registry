@@ -19,6 +19,7 @@ job [[ template "full_job_name" . ]] {
 
   group "otel-collector" {
     [[- if $vars.task_services ]]
+    [[- if $vars.task_services ]]
     [[ range $idx, $service := $vars.task_services ]]
     service {
       name = [[ $service.service_name | quote ]]
@@ -32,23 +33,35 @@ job [[ template "full_job_name" . ]] {
         timeout  = [[ $service.check_timeout | quote ]]
       }
       [[- end ]]
+      [[- if $service.connect_enabled ]]
       connect {
         sidecar_service {
           tags = [""]
+          proxy {
+            local_service_port = [[ $service.service_port ]]
+            [[ range $upstream := $service.connect_upstreams ]]
+            upstreams {
+              destination_name = [[ $upstream.name | quote ]]
+              local_bind_port  = [[ $upstream.port ]]
+            }
+            [[ end ]]
+          }
         }
       }
+      [[- end ]]
     }
-    [[ end ]]
+    [[- end ]]
+    [[- end ]]
     [[- end ]]
 
     [[- if eq $vars.job_type "service" ]]
     count = [[ $vars.instance_count ]]
     [[- end ]]
     network {
-      mode = [[ $vars.network_config.mode | quote ]]
-      [[- range $label, $to := $vars.network_config.ports ]]
-      port [[ $label | quote ]] {
-        to = [[ $to ]]
+      mode = "bridge"
+      [[ range $idx, $service := $vars.task_services ]]
+      port [[ $service.service_port_label | quote ]] {
+        to = [[ $service.service_port ]]
       }
       [[- end ]]
     }
@@ -86,7 +99,7 @@ job [[ template "full_job_name" . ]] {
 
       template {
         data = <<EOH
-[[ $vars.config_yaml ]]
+[[ $vars.otel_config_yaml ]]
 EOH
 
         change_mode   = "restart"

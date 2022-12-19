@@ -20,4 +20,4 @@ upstreams = [{
   name = "redis",
   port = 6379,
 }]
-version_tag = "v1.1.5"
+version_tag = "v1.1.8"
