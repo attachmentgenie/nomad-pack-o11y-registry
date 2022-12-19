@@ -1,8 +1,19 @@
-# Example Nomad Pack Registry
+# O11Y Nomad Pack Registry
 
-This repository is meant to be used as a reference when writing custom pack registries for [Nomad Pack](https://github.com/hashicorp/nomad-pack).
+This repository will hold a curated set of [Nomad Packs](https://github.com/hashicorp/nomad-pack) related to all things observability. 
 
 See the [documentation on Writing Packs and Registries](https://github.com/hashicorp/nomad-pack/blob/main/docs/writing-packs.md) for more information.
 
-To get started writing your own pack, make a directory with your pack name. Use the `hello_world` pack as
-an example for file structure and contents.
+This registry current holds packs for the following tools
+
+* grafana_oncall
+* grafana (fork from community registry)
+* loki (fork from community registry)
+* mimir
+* mimir_graphite_proxy
+* opentelemetry_collector (fork from community registry)
+* phlare
+* prometheus (fork from community registry)
+* prometheus_graphite_exporter
+* promlens
+* tempo (fork from community registry)
