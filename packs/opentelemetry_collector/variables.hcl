@@ -207,7 +207,7 @@ variable "additional_templates" {
 variable "task_services" {
   description = "Configuration options of the OpenTelemetry Collector services and checks."
   type = list(object({
-    service_port       = string
+    service_port       = number
     service_port_label = string
     service_name       = string
     service_tags       = list(string)
@@ -237,6 +237,7 @@ variable "task_services" {
       connect_upstreams  = []
     },
     {
+      service_port       = 4318
       service_port_label = "otlphttp"
       service_name       = "otlphttp"
       service_tags       = []
@@ -249,6 +250,7 @@ variable "task_services" {
       connect_upstreams  = []
     },
     {
+      service_port       = 8888
       service_port_label = "metrics"
       service_name       = "opentelemetry-metrics"
       service_tags       = []
@@ -261,6 +263,7 @@ variable "task_services" {
       connect_upstreams  = []
     },
     {
+      service_port       = 9411
       service_port_label = "zipkin"
       service_name       = "zipkin"
       service_tags       = []
@@ -273,6 +276,7 @@ variable "task_services" {
       connect_upstreams  = []
     },
     {
+      service_port       = 13133
       service_port_label = "healthcheck"
       service_name       = "opentelemetry-health"
       service_tags       = []
@@ -285,6 +289,7 @@ variable "task_services" {
       connect_upstreams  = []
     },
     {
+      service_port       = 14250
       service_port_label = "jaeger-grpc"
       service_name       = "jaeger-grpc"
       service_tags       = []
@@ -297,6 +302,7 @@ variable "task_services" {
       connect_upstreams  = []
     },
     {
+      service_port       = 14268
       service_port_label = "jaeger-thrift-http"
       service_name       = "jaeger-thrift-http"
       service_tags       = []
@@ -309,6 +315,7 @@ variable "task_services" {
       connect_upstreams  = []
     },
     {
+      service_port       = 55679
       service_port_label = "zpages"
       service_name       = "zpages"
       service_tags       = []
