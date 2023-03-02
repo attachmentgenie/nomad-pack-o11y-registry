@@ -17,3 +17,18 @@ This registry current holds packs for the following tools
 * prometheus_graphite_exporter
 * promlens
 * tempo (fork from community registry)
+
+## Adding the o11y Registry
+
+
+```
+nomad-pack registry add o11y github.com/attachmentgenie/nomad-pack-o11y-registry
+```
+
+To view the packs you can now deploy, run the `registry list` command.
+
+```
+nomad-pack registry list
+```
+
+Packs from this registry can now be deployed using the `run` command.
