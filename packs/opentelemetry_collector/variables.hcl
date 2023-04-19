@@ -41,7 +41,7 @@ variable "constraints" {
 variable "job_type" {
   description = "The type of the job."
   type        = string
-  default     = "system"
+  default     = "service"
 }
 
 variable "instance_count" {
