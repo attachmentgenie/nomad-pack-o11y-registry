@@ -10,14 +10,7 @@ This pack deploys a single instance of the Grafana docker image `grafana/grafana
 - `datacenters` (list(string) ["dc1"]) - A list of datacenters in the region which are eligible for
   task placement.
 - `region` (string "global") - The region where the job should be placed.
-- `dns` (object) - Network DNS configuration
-- `grafana_version_tag` (string "latest" ) - The version of Grafana Image
-- `grafana_http_port` (number "3000" ) - The Grafana Port for http
-- `grafana_upstreams` (list(object)) - Upstream configuration for sidecar proxy
-- `grafana_resources` (object) - CPU and Memory configuration for Grafana
-- `grafana_consul_tags` (list(string)) - Service tag definition for Consul
-- `grafana_volume` (object) - Persistent Volume configuration for Grafana
-- `grafana_env_vars` (list(object)) - Environment Variables for Grafana
+- `service_upstreams` (list(object)) - Upstream configuration for sidecar proxy
 - `grafana_task_artifacts` (list(object)) - Nomad Artifacts for Grafana
 - `grafana_task_config_dashboards` (string) - Yaml configuration for automatic provision of dashboards
 - `grafana_task_config_datasources` (string) - Yaml configuration for automatic provision of datasources

@@ -1,58 +1,58 @@
 variable "job_name" {
   description = "The name to use as the job name which overrides using the pack name"
   type        = string
+  // If "", the pack name will be used
   default = ""
+}
+
+variable "region" {
+  description = "The region where jobs will be deployed"
+  type        = string
+  default     = ""
 }
 
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["*"]
 }
 
 variable "namespace" {
-  description = "The namespace where the job should be placed"
+  description = "The namespace where the job should be placed."
   type        = string
   default     = "default"
 }
 
-variable "region" {
-  description = "The region where the job should be placed"
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
   type        = string
-  default     = "global"
+  default     = "default"
 }
 
-variable "dns" {
-  description = ""
-  type = object({
-    servers   = list(string)
-    searches = list(string)
-    options = list(string)
-  })
-}
-
-variable "grafana_version_tag" {
-  description = "The docker image version. For options, see https://hub.docker.com/grafana/grafana"
-  type        = string
-  default     = "latest"
-}
-
-variable "grafana_http_port" {
-  description = "The Nomad client port that routes to the Grafana"
+variable "priority" {
+  description = "The priority value the job will be given"
   type        = number
-  default     = 3000
+  default     = 50
 }
 
-variable "grafana_upstreams" {
-  description = ""
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
   type = list(object({
-    name = string
-    port = number
+    attribute = string
+    operator  = string
+    value     = string
   }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
+    },
+  ]
 }
 
-variable "grafana_resources" {
-  description = "The resource to assign to the Grafana service task"
+variable "task_resources" {
+  description = "Resources used by jenkins task."
   type = object({
     cpu    = number
     memory = number
@@ -63,33 +63,76 @@ variable "grafana_resources" {
   }
 }
 
-variable "grafana_consul_tags" {
-  description = ""
-  type = list(string)
-  default = []
+variable "image_name" {
+  description = "The docker image name."
+  type        = string
+  default     = "grafana/grafana"
 }
 
-variable "grafana_volume" {
-  description = "The resource to assign to the Grafana service task"
-  type = object({
-    name   = string
-    type   = string
-    source = string
-  })
+variable "image_tag" {
+  description = "The docker image tag."
+  type        = string
+  default     = "latest"
 }
 
-variable "grafana_env_vars" {
+variable "register_service" {
+  description = "If you want to register a service for the job"
+  type        = bool
+  default     = false
+}
+
+variable "service_connect_enabled" {
+  description = "If this service will announce itself to the service mesh. Only valid is 'service_provider == 'consul' "
+  type        = bool
+  default     = false
+}
+
+variable "service_name" {
+  description = "The service name for the application."
+  type        = string
+  default     = "grafana"
+}
+
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "service_tags" {
+  description = "The service name for the application."
+  type        = list(string)
+  default     = []
+}
+
+variable "service_upstreams" {
   description = ""
   type = list(object({
-    key   = string
-    value = string
+    name = string
+    port = number
   }))
-  default = [
-    {key = "GF_LOG_LEVEL", value = "DEBUG"},
-    {key = "GF_LOG_MODE", value = "console"},
-    {key = "GF_SERVER_HTTP_PORT", value = "$${NOMAD_PORT_http}"},
-    {key = "GF_PATHS_PROVISIONING", value = "/local/grafana/provisioning"}
-  ]
+}
+
+variable "volume_name" {
+  description = "The name of the volume you want Jenkins to use."
+  type        = string
+}
+
+variable "volume_type" {
+  description = "The type of the volume you want Jenkins to use."
+  type        = string
+  default     = "host"
+}
+
+variable "env_vars" {
+  type        = map(string)
+  description = "Environment variables to pass to Docker container."
+  default = {
+    "GF_LOG_LEVEL" : "DEBUG",
+    "GF_LOG_MODE" : "console"
+    "GF_SERVER_HTTP_PORT" : "$${NOMAD_PORT_http}",
+    "GF_PATHS_PROVISIONING" : "/local/grafana/provisioning"
+  }
 }
 
 variable "grafana_task_artifacts" {
