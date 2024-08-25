@@ -1,40 +1,33 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters  | toStringList ]]
-
-  [[ if .my.constraints ]][[ range $idx, $constraint := .my.constraints ]]
-  constraint {
-    attribute = [[ $constraint.attribute | quote ]]
-    value     = [[ $constraint.value | quote ]]
-    [[- if ne $constraint.operator "" ]]
-    operator  = [[ $constraint.operator | quote ]]
-    [[- end ]]
-  }
-  [[- end ]][[- end ]]
+  [[ template "placement" . ]]
+  type = "service"
 
   group "grafana_oncall" {
 
     network {
+      [[ if var "register_service" . ]]
       mode = "bridge"
-
+      [[ end ]]
       port "http" {
         to = 8080
       }
     }
 
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
-      [[ if .my.register_consul_connect_enabled ]]
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
+      port     = "http"
+      [[ if var "service_connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
           proxy {
             local_service_port = 8080
-            [[ range $upstream := .my.upstreams ]]
+            [[ range $upstream := var "service_upstreams" . ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -47,11 +40,7 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
-    volume "oncall" {
-      type      = "host"
-      read_only = false
-      source    = "oncall"
-    }
+    [[ template "volume" . ]]
 
     restart {
       attempts = 2
@@ -69,7 +58,7 @@ job [[ template "job_name" . ]] {
       }
 
       config {
-        image   = "grafana/oncall:[[ .my.version_tag ]]"
+        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         command = "python3"
         args = [
           "manage.py",
@@ -78,74 +67,59 @@ job [[ template "job_name" . ]] {
         ]
       }
 
-      env {
-        [[- range $var := .my.oncall_env_vars ]]
-        [[ $var.key ]] = "[[ $var.value ]]"
-        [[- end ]]
-      }
+      [[ template "env_upper" . ]]
       
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
+      [[ template "resources" . ]]
             
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = "oncall"
+        volume      = [[ var "volume_name" . | quote ]]
         destination = "/var/lib/oncall"
         read_only   = false
       }
+      [[- end ]]
     }
 
     task "engine" {
       driver = "docker"
 
       config {
-        image   = "grafana/oncall:[[ .my.version_tag ]]"
+        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         ports   = ["http"]
       }
 
-      env {
-        [[- range $var := .my.oncall_env_vars ]]
-        [[ $var.key ]] = "[[ $var.value ]]"
-        [[- end ]]
-      }
-      
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
+      [[ template "env_upper" . ]]
+
+      [[ template "resources" . ]]
             
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = "oncall"
+        volume      = [[ var "volume_name" . | quote ]]
         destination = "/var/lib/oncall"
         read_only   = false
       }
+      [[- end ]]
     }
 
     task "celery" {
       driver = "docker"
 
       config {
-        image   = "grafana/oncall:[[ .my.version_tag ]]"
+        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         command = "./celery_with_exporter.sh"
       }
 
-      env {
-        [[- range $var := .my.oncall_env_vars ]]
-        [[ $var.key ]] = "[[ $var.value ]]"
-        [[- end ]]
-      }
-      
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
+      [[ template "env_upper" . ]]
+
+      [[ template "resources" . ]]
             
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = "oncall"
+        volume      = [[ var "volume_name" . | quote ]]
         destination = "/var/lib/oncall"
         read_only   = false
       }
+      [[- end ]]
     }
   }
 }

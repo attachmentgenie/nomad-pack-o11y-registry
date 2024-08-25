@@ -4,7 +4,9 @@ job [[ template "job_name" . ]] {
 
   group "grafana" {
     network {
+      [[ if var "register_service" . ]]
       mode = "bridge"
+      [[ end ]]
       port "http" {
         to = 3000
       }
@@ -42,7 +44,7 @@ job [[ template "job_name" . ]] {
     task "grafana" {
       driver = "docker"
 
-      [[- if var "grafana_volume" . ]]
+      [[ if var "volume_name" . ]]
       volume_mount {
         volume      = [[ var "volume_name" . | quote ]]
         destination = "/var/lib/grafana"

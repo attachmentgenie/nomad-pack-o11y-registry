@@ -1,13 +1,43 @@
 variable "job_name" {
-  description = "The name to use as the job name which overrides using the pack name."
+  description = "The name to use as the job name which overrides using the pack name"
   type        = string
   // If "", the pack name will be used
   default = ""
 }
 
-variable "constraints" {
+variable "region" {
+  description = "The region where jobs will be deployed"
+  type        = string
+  default     = ""
+}
+
+variable "datacenters" {
+  description = "A list of datacenters in the region which are eligible for task placement"
+  type        = list(string)
+  default     = ["*"]
+}
+
+variable "namespace" {
+  description = "The namespace where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
   description = "Constraints to apply to the entire job."
-  type        = list(object({
+  type = list(object({
     attribute = string
     operator  = string
     value     = string
@@ -15,62 +45,14 @@ variable "constraints" {
   default = [
     {
       attribute = "$${attr.kernel.name}",
-      value     = "linux",
-      operator  = "",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
     },
   ]
 }
 
-variable "count" {
-  description = "The number of app instances to deploy"
-  type        = number
-  default     = 1
-}
-
-variable "datacenters" {
-  description = "A list of datacenters in the region which are eligible for task placement."
-  type        = list(string)
-  default     = ["dc1"]
-}
-
-variable "namespace" {
-  description = "The namespace where the job should be placed"
-  type        = string
-  default     = "default"
-}
-
-variable "region" {
-  description = "The region where the job should be placed."
-  type        = string
-  default     = "global"
-}
-
-variable "version_tag" {
-  description = "The docker image version. For options, see https://hub.docker.com/grafana/loki"
-  type        = string
-  default     = "latest"
-}
-
-variable "gossip_port" {
-  description = "The Nomad client port that routes to the Loki."
-  type        = number
-  default     = 7946
-}
-
-variable "grpc_port" {
-  description = "The Nomad client port that routes to the Loki."
-  type        = number
-  default     = 9095
-}
-
-variable "http_port" {
-  description = "The Nomad client port that routes to the Loki."
-  type        = number
-  default     = 3100
-}
-
-variable "resources" {
-  description = "The resource to assign to the Loki service task."
+variable "task_resources" {
+  description = "Resources used by jenkins task."
   type = object({
     cpu    = number
     memory = number
@@ -81,43 +63,49 @@ variable "resources" {
   }
 }
 
-variable "register_consul_service" {
-  description = "If you want to register a consul service for the job"
-  type        = bool
-  default     = true
+variable "image_name" {
+  description = "The docker image name."
+  type        = string
+  default     = "grafana/loki"
 }
 
-variable "register_consul_connect_enabled" {
-  description = "If you want to run the consul service with connect enabled. This will only work with register_consul_service = true"
-  type        = bool
-  default     = true
+variable "image_tag" {
+  description = "The docker image tag."
+  type        = string
+  default     = "latest"
 }
 
-variable "consul_service_name" {
-  description = "The consul service name for the tempo application"
+variable "register_service" {
+  description = "If you want to register a service for the job"
+  type        = bool
+  default     = false
+}
+
+variable "service_connect_enabled" {
+  description = "If this service will announce itself to the service mesh. Only valid is 'service_provider == 'consul' "
+  type        = bool
+  default     = false
+}
+
+variable "service_name" {
+  description = "The service name for the application."
   type        = string
   default     = "loki"
 }
 
-variable "consul_service_tags" {
-  description = "The consul service name for the tempo application"
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "service_tags" {
+  description = "The service name for the application."
   type        = list(string)
-  default = []
+  default     = []
 }
 
-variable "loki_yaml" {
-  description = "The Loki configuration to pass to the task."
-  type        = string
-  default     = ""
-}
-
-variable "rules_yaml" {
-  description = "The Loki rules to pass to the task."
-  type        = string
-  default     = ""
-}
-
-variable "loki_upstreams" {
+variable "service_upstreams" {
   description = ""
   type = list(object({
     name = string
@@ -125,11 +113,23 @@ variable "loki_upstreams" {
   }))
 }
 
-variable "loki_volume" {
-  description = "The resource to assign to the loki service task"
-  type = object({
-    name   = string
-    type   = string
-    source = string
-  })
+variable "volume_name" {
+  description = "The name of the volume you want Jenkins to use."
+  type        = string
+}
+
+variable "volume_type" {
+  description = "The type of the volume you want Jenkins to use."
+  type        = string
+  default     = "host"
+}
+
+variable "config_yaml" {
+  description = "The Loki configuration to pass to the task."
+  type        = string
+}
+
+variable "rules_yaml" {
+  description = "The Loki rules to pass to the task."
+  type        = string
 }

@@ -1,22 +1,25 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters  | toStringList ]]
+  [[ template "placement" . ]]
   type = "service"
 
   group "server" {
     network {
+      [[ if var "register_service" . ]]
       mode = "bridge"
+      [[ end ]]
       port "http" {
         to = 8080
       }
     }
 
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
+      port     = "http"
       check {
         name     = "alive"
         type     = "http"
@@ -24,12 +27,12 @@ job [[ template "job_name" . ]] {
         interval = "10s"
         timeout  = "2s"
       }
-      [[ if .my.register_consul_service ]]
+      [[ if var "service_connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
           proxy {
-            [[ range $upstream := .my.promlens_upstreams ]]
+            [[ range $upstream := var "service_upstreams" . ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -50,11 +53,11 @@ job [[ template "job_name" . ]] {
     }
 
     task "server" {
-      driver = "[[ .my.promlens_task.driver ]]"
+      driver = "docker"
 
       config {
-        image = "prom/promlens:[[ .my.promlens_task.version ]]"
-        args = [[ .my.promlens_task.cli_args | toPrettyJson ]]
+        image = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
+        args  = [[ var "promlens_cli_args" . | toPrettyJson ]]
         ports = ["http"]
       }
     }

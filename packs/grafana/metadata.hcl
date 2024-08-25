@@ -1,5 +1,5 @@
 app {
-  url    = "https://grafana.com/"
+  url = "https://grafana.com/"
 }
 
 pack {

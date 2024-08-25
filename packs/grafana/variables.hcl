@@ -138,17 +138,17 @@ variable "env_vars" {
 variable "grafana_task_artifacts" {
   description = "Define external artifacts for Grafana."
   type = list(object({
-    source   = string
+    source      = string
     destination = string
-    mode   = string
-    options = map(string)
+    mode        = string
+    options     = map(string)
   }))
   default = [
     {
-      source = "https://grafana.com/api/dashboards/1860/revisions/26/download",
+      source      = "https://grafana.com/api/dashboards/1860/revisions/26/download",
       destination = "local/grafana/provisioning/dashboards/linux/linux-node-exporter.json"
-      mode = "file"
-      options = null
+      mode        = "file"
+      options     = null
     },
   ]
 }

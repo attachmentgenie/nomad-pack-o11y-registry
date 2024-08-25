@@ -1,19 +1,20 @@
 variable "job_name" {
-  description = "The name to use as the job name which overrides using the pack name."
+  description = "The name to use as the job name which overrides using the pack name"
+  type        = string
+  // If "", the pack name will be used
+  default = ""
+}
+
+variable "region" {
+  description = "The region where jobs will be deployed"
   type        = string
   default     = ""
 }
 
 variable "datacenters" {
-  description = "A list of datacenters in the region which are eligible for job placement."
+  description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
-}
-
-variable "region" {
-  description = "The region where the job should be placed."
-  type        = string
-  default     = "global"
+  default     = ["*"]
 }
 
 variable "namespace" {
@@ -22,7 +23,19 @@ variable "namespace" {
   default     = "default"
 }
 
-variable "constraints" {
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
   description = "Constraints to apply to the entire job."
   type = list(object({
     attribute = string
@@ -32,22 +45,34 @@ variable "constraints" {
   default = [
     {
       attribute = "$${attr.kernel.name}",
-      value     = "linux",
-      operator  = "",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
     },
   ]
 }
 
-variable "job_type" {
-  description = "The type of the job."
-  type        = string
-  default     = "service"
+variable "task_resources" {
+  description = "Resources used by jenkins task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 256
+    memory = 512
+  }
 }
 
-variable "instance_count" {
-  description = "In case the job is ran as a service, how many copies of the opentelemetry_collector group to run."
-  type        = number
-  default     = 1
+variable "image_name" {
+  description = "The docker image name."
+  type        = string
+  default     = "otel/opentelemetry-collector-contrib"
+}
+
+variable "image_tag" {
+  description = "The docker image tag."
+  type        = string
+  default     = "latest"
 }
 
 variable "privileged_mode" {
@@ -56,55 +81,16 @@ variable "privileged_mode" {
   default     = false
 }
 
-variable "register_consul_service" {
-  description = "If you want to register a consul service for the job"
+variable "register_service" {
+  description = "If you want to register a service for the job"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "task_config" {
-  description = "The OpenTelemetry Collector task config options."
-  type = object({
-    image   = string
-    version = string
-    env     = map(string)
-  })
-  default = {
-    image   = "otel/opentelemetry-collector-contrib"
-    version = "latest"
-    env     = {}
-  }
-}
-
-variable "vault_config" {
-  description = "The OpenTelemetry Collector job's Vault configuration. Set `enabled = true` to configure the job to use vault See: https://www.nomadproject.io/docs/job-specification/vault"
-  type = object({
-    enabled       = bool
-    policies      = list(string)
-    change_mode   = string
-    change_signal = string
-    env           = bool
-    namespace     = string
-  })
-  default = {
-    enabled       = false
-    policies      = []
-    change_mode   = "restart"
-    change_signal = ""
-    env           = true
-    namespace     = ""
-  }
-}
-
-variable "traefik_config" {
-  description = "Traefik configurations for the OpenTelemetry Collector"
-  type = object({
-    enabled = bool
-  })
-  default = {
-    enabled   = false
-    http_host = "otel-collector-http.myhost.com"
-  }
+variable "env_vars" {
+  type        = map(string)
+  description = "Environment variables to pass to Docker container."
+  default     = {}
 }
 
 variable "network_config" {
@@ -125,18 +111,6 @@ variable "network_config" {
       "jaeger-thrift-http" = 14268
       "zpages"             = 55679
     }
-  }
-}
-
-variable "resources" {
-  description = "The resources to assign to the OpenTelemetry Collector task."
-  type = object({
-    cpu    = number
-    memory = number
-  })
-  default = {
-    cpu    = 256
-    memory = 512
   }
 }
 
@@ -209,6 +183,7 @@ variable "task_services" {
   type = list(object({
     service_port       = number
     service_port_label = string
+    service_provider   = string
     service_name       = string
     service_tags       = list(string)
     check_enabled      = bool
@@ -217,7 +192,7 @@ variable "task_services" {
     check_interval     = string
     check_timeout      = string
     connect_enabled    = bool
-    connect_upstreams  = list(object({
+    connect_upstreams = list(object({
       name = string
       port = number
     }))
@@ -226,6 +201,7 @@ variable "task_services" {
     {
       service_port       = 4317
       service_port_label = "otlp"
+      service_provider   = "consul"
       service_name       = "otlp"
       service_tags       = []
       check_enabled      = false
@@ -239,6 +215,7 @@ variable "task_services" {
     {
       service_port       = 4318
       service_port_label = "otlphttp"
+      service_provider   = "consul"
       service_name       = "otlphttp"
       service_tags       = []
       check_enabled      = false
@@ -252,6 +229,7 @@ variable "task_services" {
     {
       service_port       = 8888
       service_port_label = "metrics"
+      service_provider   = "consul"
       service_name       = "opentelemetry-metrics"
       service_tags       = []
       check_enabled      = false
@@ -265,6 +243,7 @@ variable "task_services" {
     {
       service_port       = 9411
       service_port_label = "zipkin"
+      service_provider   = "consul"
       service_name       = "zipkin"
       service_tags       = []
       check_enabled      = false
@@ -278,6 +257,7 @@ variable "task_services" {
     {
       service_port       = 13133
       service_port_label = "healthcheck"
+      service_provider   = "consul"
       service_name       = "opentelemetry-health"
       service_tags       = []
       check_enabled      = true
@@ -291,6 +271,7 @@ variable "task_services" {
     {
       service_port       = 14250
       service_port_label = "jaeger-grpc"
+      service_provider   = "consul"
       service_name       = "jaeger-grpc"
       service_tags       = []
       check_enabled      = false
@@ -304,6 +285,7 @@ variable "task_services" {
     {
       service_port       = 14268
       service_port_label = "jaeger-thrift-http"
+      service_provider   = "consul"
       service_name       = "jaeger-thrift-http"
       service_tags       = []
       check_enabled      = false
@@ -317,6 +299,7 @@ variable "task_services" {
     {
       service_port       = 55679
       service_port_label = "zpages"
+      service_provider   = "consul"
       service_name       = "zpages"
       service_tags       = []
       check_enabled      = false
@@ -326,5 +309,5 @@ variable "task_services" {
       check_timeout      = "3s"
       connect_enabled    = false
       connect_upstreams  = []
-    }]
+  }]
 }

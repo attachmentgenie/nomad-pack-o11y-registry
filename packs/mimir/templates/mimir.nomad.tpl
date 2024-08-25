@@ -1,52 +1,46 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters  | toStringList ]]
+  [[ template "placement" . ]]
   type = "service"
 
   group "mimir" {
-    count = [[ .my.count ]]
-
     network {
+      [[ if var "register_service" . ]]
       mode = "bridge"
+      [[ end ]]
       port "gossip" {
-        to = [[ .my.gossip_port ]]
+        to = 7946
       }
       port "grpc" {
-        to = [[ .my.grpc_port ]]
+        to = 9095
       }
       port "http" {
-        to = [[ .my.http_port ]]
+        to = 8080
       }
     }
 
-    [[- if .my.mimir_volume ]]
-    volume "mimir" {
-      type = [[ .my.mimir_volume.type | quote ]]
-      read_only = false
-      source = [[ .my.mimir_volume.source | quote ]]
-    }
-    [[- end ]]
+    [[ template "volume" . ]]
     
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
-      
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
+      port     = "http"
       check {
         type     = "http"
         path     = "/ready"
         interval = "10s"
         timeout  = "2s"
       }
-      [[ if .my.register_consul_service ]]
+      [[ if var "service_connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
           proxy {
-            local_service_port = [[ .my.http_port ]]
-            [[ range $upstream := .my.mimir_upstreams ]]
+            local_service_port = 8080
+            [[ range $upstream := var "service_upstreams" . ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -58,39 +52,41 @@ job [[ template "job_name" . ]] {
       [[ end ]]
     }
     service {
-      name = "[[ .my.consul_service_name ]]-gossip"
+      name = "[[ var "service_name" . ]]-gossip"
+      provider = "[[ var "service_provider" . ]]"
       port = "gossip"
     }
     service {
-      name = "[[ .my.consul_service_name ]]-grpc"
+      name = "[[ var "service_name" . ]]-grpc"
+      provider = "[[ var "service_provider" . ]]"
       port = "grpc"
     }
     [[ end ]]
 
     task "server" {
-      driver = "[[ .my.mimir_task.driver ]]"
+      driver = "docker"
 
-      [[- if .my.mimir_volume ]]
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = [[ .my.mimir_volume.name | quote ]]
+        volume      = [[ var "volume_name" . | quote ]]
         destination = "/mimir"
         read_only   = false
       }
       [[- end ]]
 
       config {
-        image = "grafana/mimir:[[ .my.mimir_task.version ]]"
-        args = [[ .my.mimir_task.cli_args | toPrettyJson ]]
+        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
+        args = [[ var "mimir_cli_args" . | toPrettyJson ]]
         ports = ["gossip","grpc","http"]
         volumes = [
           "local/config:/etc/mimir",
         ]
       }
 
-      [[- if ne .my.mimir_task_app_mimir_yaml "" ]]
+      [[- if var "mimir_task_app_mimir_yaml" . ]]
       template {
         data = <<EOH
-[[ .my.mimir_task_app_mimir_yaml ]]
+[[ var "mimir_task_app_mimir_yaml" . ]]
 EOH
 
         change_mode   = "signal"
@@ -99,10 +95,10 @@ EOH
       }
       [[- end ]]
 
-      [[- if ne .my.mimir_task_alertmanager_mimir_yaml "" ]]
+      [[- if var "mimir_task_alertmanager_mimir_yaml" . ]]
       template {
         data = <<EOH
-[[ .my.mimir_task_alertmanager_mimir_yaml ]]
+[[ var "mimir_task_alertmanager_mimir_yaml" . ]]
 EOH
 
         change_mode   = "signal"

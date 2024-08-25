@@ -1,19 +1,20 @@
 variable "job_name" {
-  description = "The name to use as the job name which overrides using the pack name."
+  description = "The name to use as the job name which overrides using the pack name"
+  type        = string
+  // If "", the pack name will be used
+  default = ""
+}
+
+variable "region" {
+  description = "The region where jobs will be deployed"
   type        = string
   default     = ""
 }
 
 variable "datacenters" {
-  description = "A list of datacenters in the region which are eligible for job placement."
+  description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
-}
-
-variable "region" {
-  description = "The region where the job should be placed."
-  type        = string
-  default     = "global"
+  default     = ["*"]
 }
 
 variable "namespace" {
@@ -22,9 +23,21 @@ variable "namespace" {
   default     = "default"
 }
 
-variable "constraints" {
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
   description = "Constraints to apply to the entire job."
-  type        = list(object({
+  type = list(object({
     attribute = string
     operator  = string
     value     = string
@@ -32,44 +45,95 @@ variable "constraints" {
   default = [
     {
       attribute = "$${attr.kernel.name}",
-      value     = "linux",
-      operator  = "",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
     },
   ]
 }
 
-variable "prometheus_group_network" {
-  description = "The Prometheus network configuration options."
-  type        = object({
-    mode  = string
-    ports = map(number)
+variable "task_resources" {
+  description = "Resources used by jenkins task."
+  type = object({
+    cpu    = number
+    memory = number
   })
   default = {
-    mode  = "bridge",
-    ports = {
-      "http" = 9090,
-    },
+    cpu    = 200,
+    memory = 256
   }
 }
 
-variable "prometheus_task" {
-  description = "Details configuration options for the Prometheus task."
-  type        = object({
-    driver   = string
-    version  = string
-    cli_args = list(string)
-  })
-  default = {
-    driver   = "docker",
-    version  = "2.30.2",
-    cli_args = [
-      "--config.file=/etc/prometheus/config/prometheus.yml",
-      "--storage.tsdb.path=/prometheus",
-      "--web.listen-address=0.0.0.0:9090",
-      "--web.console.libraries=/usr/share/prometheus/console_libraries",
-      "--web.console.templates=/usr/share/prometheus/consoles",
-    ]
-  }
+variable "image_name" {
+  description = "The docker image name."
+  type        = string
+  default     = "prom/prometheus"
+}
+
+variable "image_tag" {
+  description = "The docker image tag."
+  type        = string
+  default     = "latest"
+}
+
+variable "register_service" {
+  description = "If you want to register a service for the job"
+  type        = bool
+  default     = false
+}
+
+variable "service_connect_enabled" {
+  description = "If this service will announce itself to the service mesh. Only valid is 'service_provider == 'consul' "
+  type        = bool
+  default     = false
+}
+
+variable "service_name" {
+  description = "The service name for the application."
+  type        = string
+  default     = "prometheus"
+}
+
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "service_tags" {
+  description = "The service name for the application."
+  type        = list(string)
+  default     = []
+}
+
+variable "service_upstreams" {
+  description = ""
+  type = list(object({
+    name = string
+    port = number
+  }))
+}
+
+variable "volume_name" {
+  description = "The name of the volume you want Jenkins to use."
+  type        = string
+}
+
+variable "volume_type" {
+  description = "The type of the volume you want Jenkins to use."
+  type        = string
+  default     = "host"
+}
+
+variable "prometheus_cli_args" {
+  description = "Details configuration options for the mimir task."
+  type        = list(string)
+  default = [
+    "--config.file=/etc/prometheus/config/prometheus.yml",
+    "--storage.tsdb.path=/prometheus",
+    "--web.listen-address=0.0.0.0:9090",
+    "--web.console.libraries=/usr/share/prometheus/console_libraries",
+    "--web.console.templates=/usr/share/prometheus/consoles",
+  ]
 }
 
 variable "prometheus_task_app_prometheus_yaml" {
@@ -123,49 +187,4 @@ variable "prometheus_task_app_rules_yaml" {
   description = "Yaml configuration for the alerts to setup in prometheus."
   type        = string
   default     = ""
-}
-
-variable "prometheus_task_resources" {
-  description = "The resource to assign to the Prometheus task."
-  type        = object({
-    cpu    = number
-    memory = number
-  })
-  default = {
-    cpu    = 500,
-    memory = 256,
-  }
-}
-
-variable "prometheus_task_services" {
-  description = "Configuration options of the Prometheus services and checks."
-  type        = list(object({
-    service_port_label = string
-    service_name       = string
-    service_tags       = list(string)
-    service_upstreams  = list(object({name = string, port = string}))
-    check_enabled      = bool
-    check_path         = string
-    check_interval     = string
-    check_timeout      = string
-  }))
-  default = [{
-    service_port_label = "http",
-    service_name       = "prometheus",
-    service_tags       = ["metrics"],
-    service_upstreams  = [],
-    check_enabled      = true,
-    check_path         = "/-/healthy",
-    check_interval     = "3s",
-    check_timeout      = "1s",
-  }]
-}
-
-variable "prometheus_volume" {
-  description = "The resource to assign to the prometheus service task"
-  type = object({
-    name   = string
-    type   = string
-    source = string
-  })
 }

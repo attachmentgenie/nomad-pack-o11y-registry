@@ -1,62 +1,46 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters | toStringList ]]
-
-  [[ if .my.constraints ]][[ range $idx, $constraint := .my.constraints ]]
-  constraint {
-    attribute = [[ $constraint.attribute | quote ]]
-    value     = [[ $constraint.value | quote ]]
-    [[- if ne $constraint.operator "" ]]
-    operator  = [[ $constraint.operator | quote ]]
-    [[- end ]]
-  }
-  [[- end ]][[- end ]]
+  [[ template "placement" . ]]
+  type = "service"
 
   group "loki" {
-    count = [[ .my.count ]]
-
     network {
+      [[ if var "register_service" . ]]
       mode = "bridge"
-
+      [[ end ]]
       port "gossip" {
-        to = [[ .my.gossip_port ]]
+        to = 7946
       }
       port "grpc" {
-        to = [[ .my.grpc_port ]]
+        to = 9095
       }
       port "http" {
-        to = [[ .my.http_port ]]
+        to = 3100
       }
     }
 
-    [[- if .my.loki_volume ]]
-    volume "loki" {
-      type = [[ .my.loki_volume.type | quote ]]
-      read_only = false
-      source = [[ .my.loki_volume.source | quote ]]
-    }
-    [[- end ]]
+    [[ template "volume" . ]]
     
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
-      [[ if .my.register_consul_connect_enabled ]]
-
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
+      port     = "http"
       check {
         type     = "http"
         path     = "/ready"
         interval = "10s"
         timeout  = "2s"
       }
+      [[ if var "service_connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
           proxy {
-            local_service_port = [[ .my.http_port ]]
-            [[ range $upstream := .my.loki_upstreams ]]
+            local_service_port = 3100
+            [[ range $upstream := var "service_upstreams" . ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -68,11 +52,13 @@ job [[ template "job_name" . ]] {
       [[ end ]]
     }
     service {
-      name = "[[ .my.consul_service_name ]]-gossip"
+      name = "[[ var "service_name" . ]]-gossip"
+      provider = "[[ var "service_provider" . ]]"
       port = "gossip"
     }
     service {
-      name = "[[ .my.consul_service_name ]]-grpc"
+      name = "[[ var "service_name" . ]]-grpc"
+      provider = "[[ var "service_provider" . ]]"
       port = "grpc"
     }
     [[ end ]]
@@ -80,39 +66,36 @@ job [[ template "job_name" . ]] {
     task "server" {
       driver = "docker"
 
-      [[- if .my.loki_volume ]]
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = [[ .my.loki_volume.name | quote ]]
+        volume      = [[ var "volume_name" . | quote ]]
         destination = "/loki"
         read_only   = false
       }
       [[- end ]]
 
       config {
-        image = "grafana/loki:[[ .my.version_tag ]]"
+        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         ports = ["gossip","grpc","http"]
-        [[- if ne .my.loki_yaml "" ]]
+        [[- if var "config_yaml" . ]]
         args = [
           "--config.file=/etc/loki/config/loki.yml",
         ]
         volumes = [
           "local/config:/etc/loki/config",
-          [[- if ne .my.rules_yaml "" ]]
+          [[- if var "rules_yaml" . ]]
           "local/rules:/etc/loki/rules/default",
           [[- end ]]
         ]
         [[- end ]]
       }
 
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
+      [[ template "resources" . ]]
 
-      [[- if ne .my.loki_yaml "" ]]
+        [[- if var "config_yaml" . ]]
       template {
         data = <<EOH
-[[ .my.loki_yaml ]]
+[[ var "config_yaml" . ]]
 EOH
         change_mode   = "signal"
         change_signal = "SIGHUP"
@@ -120,10 +103,10 @@ EOH
       }
       [[- end ]]
 
-      [[- if ne .my.rules_yaml "" ]]
+        [[- if var "rules_yaml" . ]]
       template {
         data = <<EOH
-[[ .my.rules_yaml ]]
+[[ var "rules_yaml" . ]]
 EOH
         change_mode   = "signal"
         change_signal = "SIGHUP"

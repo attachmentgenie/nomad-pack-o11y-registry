@@ -13,17 +13,10 @@ different ways.
 - `namespace` (`string` `"default"`) - The namespace where the job should be placed.
 - `constraints` (`list(object)` `[]`) - Constraints to apply to the entire job.
 - `job_type` (`string` `"system"`) - The scheduler type to use for the job.
-- `instance_count` (`number` `"1"`) - In case the job is ran as a service, how many copies of the OpenTelemetry
-  Collector group to run.
 - `privileged_mode` (`bool` `"true"`) - Determines if the OpenTelemetry Collector should run with privleged access to
   the host. Useful when using the [hostmetrics][hostmetricsreceiver] receiver. See `examples/privileged.hcl` for a an
   example.
 - `task_config` (`object`) - The OpenTelemetry Collector task config options.
-- `vault_config` (`object`) - The OpenTelemetry Collector job's Vault configuration. Set `enabled = true` to configure
-  the job's [Vault integration][vault_integration].
-- `traefik_config` (`object`) - Traefik service configurations for the OpenTelemetry Collector. Includes support for
-  HTTP and gRPC. See [`examples/traefik.hcl`](examples/traefik.hcl) for an example (NOTE: Also deploy with Traefik
-  sample jobspec, [`examples/sample_traefik_spec.nomad`](examples/sample_traefik_spec.nomad)).
 - `network_config` (`object`) - The OpenTelemetry Collector job's network configuration options.
 - `resources` (`object`) - The resources to assign to the OpenTelemetry Collector task.
 - `config_yaml_location` (`string` `"local/otel/config.yaml"`) - The location of `otel-collector-config.yaml` in the
@@ -93,26 +86,6 @@ The default value for this variable configures a bridge network with the followi
 - `cpu` (`number` `256`) - Specifies the CPU required to run this task in MHz.
 - `memory` (`number` `512`) - Specifies the memory required in MB.
 
-### `vault_config` Object
-
-These all map directly to the values for the [Vault integration][vault_integration].
-
-- `enabled` (`bool` `false`) - Enable the integration for the job.
-- `policies` (`list(string)`) - The named list of Vault policies this job requires.
-- `change_mode` (`string` `"restart"`) - The behaviour Nomad should take if the Vault token changes.
-- `change_signal` (`string`) - The signal Nomad should send to the task. Used when `change_mode` is `signal`.
-- `env` (`bool` `true`) - Specifies if `VAULT_TOKEN` and `VAULT_NAMESPACE` environment variables should be set when
-  starting the task.
-- `namespace` (`string`) - Specifies the Vault Namespace to use for the task. Requires Vault Enterprise.
-
-### `traefik_config` Object
-
-- `enabled` (`bool` `false`) - Enable Traefik configs for the OTel Collector. Also requires a Traefik job to be running
-  in Nomad. An example on how to run Traefik the pack is provided in the [`Running the OTel Collector + Traefik
-  Example`](#running-the-otel-collector--traefik-example) section below.
-- `http_host` (`string` `"otel-collector-http.myhost.com"`) - The HTTP hostname to which Traefik will route OTLP HTTP
-  requests.
-
 > **NOTES:**
 > 1. The default Traefik config does not have TLS enabled (both for HTTP and gRPC). For more on enabling TLS on Traefik
 > with Nomad, check out [this post by David Alfonzo](https://storiesfromtheherd.com/traefik-in-nomad-using-consul-and-tls-5be0007794ee).
@@ -171,4 +144,3 @@ nomad-pack run opentelemetry_collector -f packs/opentelemetry_collector/examples
 [job_constraint]: https://www.nomadproject.io/docs/job-specification/constraint
 [otel_docker_tags]: https://hub.docker.com/r/otel/opentelemetry-collector-contrib/tags
 [template_stanza]: https://www.nomadproject.io/docs/job-specification/template
-[vault_integration]: https://www.nomadproject.io/docs/job-specification/vault

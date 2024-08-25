@@ -1,0 +1,1 @@
+# nomad-pack refuses to include a pack without a variable file.

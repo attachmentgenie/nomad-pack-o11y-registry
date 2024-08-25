@@ -1,62 +1,46 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .phlare.datacenters | toStringList ]]
-
-  [[ if .phlare.constraints ]][[ range $idx, $constraint := .phlare.constraints ]]
-  constraint {
-    attribute = [[ $constraint.attribute | quote ]]
-    value     = [[ $constraint.value | quote ]]
-    [[- if ne $constraint.operator "" ]]
-    operator  = [[ $constraint.operator | quote ]]
-    [[- end ]]
-  }
-  [[- end ]][[- end ]]
+  [[ template "placement" . ]]
+  type = "service"
 
   group "phlare" {
-    count = [[ .my.count ]]
-
     network {
+      [[ if var "register_service" . ]]
       mode = "bridge"
-
+      [[ end ]]
       port "gossip" {
         to = 7946
       }
       port "grpc" {
-        to = [[ .phlare.grpc_port ]]
+        to = 9095
       }
       port "http" {
-        to = [[ .phlare.http_port ]]
+        to = 4100
       }
     }
 
-    [[- if .my.phlare_volume ]]
-    volume "phlare" {
-      type = [[ .my.phlare_volume.type | quote ]]
-      read_only = false
-      source = [[ .my.phlare_volume.source | quote ]]
-    }
-    [[- end ]]
+    [[ template "volume" . ]]
     
-    [[ if .phlare.register_consul_service ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ .phlare.consul_service_name ]]"
-      tags = [[ .phlare.consul_service_tags | toStringList ]]
-      port = "http"
-      
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
+      port     = "http"
       check {
         type     = "http"
         path     = "/ready"
         interval = "10s"
         timeout  = "2s"
       }
-      [[ if .phlare.register_consul_connect_enabled ]]
+      [[ if var "service_connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
           proxy {
-            local_service_port = [[ .phlare.http_port ]]
-            [[ range $upstream := .phlare.phlare_upstreams ]]
+            local_service_port = 4100
+            [[ range $upstream := var "service_upstreams" . ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -68,11 +52,13 @@ job [[ template "job_name" . ]] {
       [[ end ]]
     }
     service {
-      name = "[[ .phlare.consul_service_name ]]-gossip"
+      name = "[[ var "service_name" . ]]-gossip"
+      provider = "[[ var "service_provider" . ]]"
       port = "gossip"
     }
     service {
-      name = "[[ .phlare.consul_service_name ]]-grpc"
+      name = "[[ var "service_name" . ]]-grpc"
+      provider = "[[ var "service_provider" . ]]"
       port = "grpc"
     }
     [[ end ]]
@@ -80,18 +66,18 @@ job [[ template "job_name" . ]] {
     task "phlare" {
       driver = "docker"
 
-      [[- if .my.phlare_volume ]]
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = [[ .my.phlare_volume.name | quote ]]
+        volume      = [[ var "volume_name" . | quote ]]
         destination = "/phlare"
         read_only   = false
       }
       [[- end ]]
       
       config {
-        image = "grafana/phlare:[[ .phlare.version_tag ]]"
+        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         ports = ["gossip","grpc","http"]
-        [[- if ne .phlare.phlare_yaml "" ]]
+        [[- if var "config_yaml" . ]]
         args = [
           "--config.file=/etc/phlare/config/phlare.yml",
         ]
@@ -101,17 +87,13 @@ job [[ template "job_name" . ]] {
         [[- end ]]
       }
 
-      resources {
-        cpu    = [[ .phlare.resources.cpu ]]
-        memory = [[ .phlare.resources.memory ]]
-      }
+      [[ template "resources" . ]]
 
-      [[- if ne .phlare.phlare_yaml "" ]]
+        [[- if var "config_yaml" . ]]
       template {
         data = <<EOH
-[[ .phlare.phlare_yaml ]]
+[[ var "config_yaml" . ]]
 EOH
-
         change_mode   = "signal"
         change_signal = "SIGHUP"
         destination   = "local/config/phlare.yml"

@@ -44,7 +44,6 @@ search for Consul services with the tags found in the default value of the
 <!-- Include information on the variables from your pack -->
 
 - `message` (string) - The message your application will respond with
-- `count` (number) - The number of app instances to deploy
 - `job_name` (string) - The name to use as the job name which overrides using
   the pack name
 - `datacenters` (list of strings) - A list of datacenters in the region which

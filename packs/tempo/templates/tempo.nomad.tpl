@@ -1,32 +1,20 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters | toStringList ]]
-
-  [[ if .my.constraints ]][[ range $idx, $constraint := .my.constraints ]]
-  constraint {
-    attribute = [[ $constraint.attribute | quote ]]
-    value     = [[ $constraint.value | quote ]]
-    [[- if ne $constraint.operator "" ]]
-    operator  = [[ $constraint.operator | quote ]]
-    [[- end ]]
-  }
-  [[- end ]][[- end ]]
+  [[ template "placement" . ]]
+  type = "service"
 
   group "tempo" {
-    count = [[ .my.count ]]
-
     network {
+      [[ if var "register_service" . ]]
       mode = "bridge"
-
+      [[ end ]]
       port "gossip" {
-        to = [[ .my.gossip_port ]]
+        to = 7946
       }
       port "grpc" {
-        to = [[ .my.grpc_port ]]
+        to = 9095
       }
       port "http" {
-        to = [[ .my.http_port ]]
+        to = 3200
       }
       port "jaeger_thrift_compact" {
         to = 6831
@@ -54,33 +42,29 @@ job [[ template "job_name" . ]] {
       }
     }
     
-    [[- if .my.tempo_volume ]]
-    volume "tempo" {
-      type = [[ .my.tempo_volume.type | quote ]]
-      read_only = false
-      source = [[ .my.tempo_volume.source | quote ]]
-    }
-    [[- end ]]
+    [[ template "volume" . ]]
 
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
-
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
+      port     = "http"
       check {
         type     = "http"
         path     = "/ready"
         interval = "10s"
         timeout  = "2s"
       }
-      [[ if .my.register_consul_connect_enabled ]]
+      [[ if var "service_connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
           proxy {
-            local_service_port = [[ .my.http_port ]]
-            [[ range $upstream := .my.tempo_upstreams ]]
+            local_service_port = 3200
+            [[ range $upstream := var "service_upstreams" . ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -92,17 +76,20 @@ job [[ template "job_name" . ]] {
       [[ end ]]
     }
     service {
-      name = "[[ .my.consul_service_name ]]-gossip"
-      port = "gossip"
+      name     = "[[ var "service_name" . ]]-gossip"
+      provider = "[[ var "service_provider" . ]]"
+      port     = "gossip"
     }
     service {
-      name = "[[ .my.consul_service_name ]]-grpc"
-      port = "grpc"
+      name     = "[[ var "service_name" . ]]-grpc"
+      provider = "[[ var "service_provider" . ]]"
+      port     = "grpc"
     }
     service {
-      name = "[[ .my.consul_service_name ]]-otlp-grpc"
-      port = "otlp_grpc"
-      [[ if .my.register_consul_connect_enabled ]]
+      name     = "[[ var "service_name" . ]]-otlp-grpc"
+      provider = "[[ var "service_provider" . ]]"
+      port     = "otlp_grpc"
+      [[ if var "service_connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
@@ -114,30 +101,32 @@ job [[ template "job_name" . ]] {
       [[ end ]]
     }
     service {
-      name = "[[ .my.consul_service_name ]]-otlp-http"
-      port = "otlp_http"
+      name     = "[[ var "service_name" . ]]-otlp-http"
+      provider = "[[ var "service_provider" . ]]"
+      port     = "otlp_http"
     }
     service {
-      name = "[[ .my.consul_service_name ]]-zipkin"
-      port = "zipkin"
+      name     = "[[ var "service_name" . ]]-zipkin"
+      provider = "[[ var "service_provider" . ]]"
+      port     = "zipkin"
     }
     [[ end ]]
 
     task "tempo" {
       driver = "docker"
 
-      [[- if .my.tempo_volume ]]
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = [[ .my.tempo_volume.name | quote ]]
+        volume      = [[ var "volume_name" . | quote ]]
         destination = "/tempo"
         read_only   = false
       }
       [[- end ]]
       
       config {
-        image = "grafana/tempo:[[ .my.version_tag ]]"
+        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         ports = ["gossip","grpc","http"]
-        [[- if ne .my.tempo_yaml "" ]]
+        [[- if var "config_yaml" . ]]
         args = [
           "--config.file=/etc/tempo/config/tempo.yml",
         ]
@@ -147,15 +136,12 @@ job [[ template "job_name" . ]] {
         [[- end ]]
       }
 
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
+      [[ template "resources" . ]]
 
-      [[- if ne .my.tempo_yaml "" ]]
+      [[- if var "config_yaml" . ]]
       template {
         data = <<EOH
-[[ .my.tempo_yaml ]]
+[[ var "config_yaml" . ]]
 EOH
 
         change_mode   = "signal"

@@ -6,15 +6,14 @@ See the [documentation on Writing Packs and Registries](https://github.com/hashi
 
 This registry current holds packs for the following tools
 
-* grafana_oncall
 * grafana (fork from community registry)
+* grafana_oncall
 * loki (fork from community registry)
 * mimir
-* mimir_graphite_proxy
 * opentelemetry_collector (fork from community registry)
 * phlare
 * prometheus (fork from community registry)
-* prometheus_graphite_exporter
+* prometheus_blackbox_exporter
 * promlens
 * tempo (fork from community registry)
 

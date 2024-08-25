@@ -5,90 +5,129 @@ variable "job_name" {
   default = ""
 }
 
-variable "namespace" {
-  description = "The namespace where the job should be placed"
-  type        = string
-  default     = "default"
-}
-
 variable "region" {
-  description = "The region where the job should be placed"
+  description = "The region where jobs will be deployed"
   type        = string
-  default     = "global"
+  default     = ""
 }
 
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["*"]
 }
 
-variable "count" {
-  description = "The number of app instances to deploy"
-  type        = number
-  default     = 1
-}
-
-variable "register_consul_service" {
-  description = "If you want to register a consul service for the job"
-  type        = bool
-  default     = true
-}
-
-variable "consul_service_name" {
-  description = "The consul service name for the prometheus_graphite_exporter application"
+variable "namespace" {
+  description = "The namespace where the job should be placed."
   type        = string
-  default     = "mimir"
+  default     = "default"
 }
 
-variable "consul_service_tags" {
-  description = "The consul service name for the prometheus_graphite_exporter application"
-  type        = list(string)
-  default = []
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
 }
 
-variable "mimir_task" {
-  description = "Details configuration options for the mimir task."
-  type        = object({
-    driver   = string
-    version  = string
-    cli_args = list(string)
-  })
-  default = {
-    driver   = "docker",
-    version  = "latest",
-    cli_args = []
-  }
-}
-
-variable "gossip_port" {
-  description = "The Nomad client port that routes to the Loki."
+variable "priority" {
+  description = "The priority value the job will be given"
   type        = number
-  default     = 7946
+  default     = 50
 }
 
-variable "grpc_port" {
-  description = "The Nomad client port that routes to the mimir."
-  type        = number
-  default     = 9095
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
+  type = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
+    },
+  ]
 }
 
-variable "http_port" {
-  description = "The Nomad client port that routes to the mimir."
-  type        = number
-  default     = 8080
-}
-
-variable "mimir_task_resources" {
-  description = "The resource to assign to the mimir task."
-  type        = object({
+variable "task_resources" {
+  description = "Resources used by jenkins task."
+  type = object({
     cpu    = number
     memory = number
   })
   default = {
-    cpu    = 500,
-    memory = 256,
+    cpu    = 200,
+    memory = 256
   }
+}
+
+variable "image_name" {
+  description = "The docker image name."
+  type        = string
+  default     = "grafana/mimir"
+}
+
+variable "image_tag" {
+  description = "The docker image tag."
+  type        = string
+  default     = "latest"
+}
+
+variable "register_service" {
+  description = "If you want to register a service for the job"
+  type        = bool
+  default     = false
+}
+
+variable "service_connect_enabled" {
+  description = "If this service will announce itself to the service mesh. Only valid is 'service_provider == 'consul' "
+  type        = bool
+  default     = false
+}
+
+variable "service_name" {
+  description = "The service name for the application."
+  type        = string
+  default     = "mimir"
+}
+
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "service_tags" {
+  description = "The service name for the application."
+  type        = list(string)
+  default     = []
+}
+
+variable "service_upstreams" {
+  description = ""
+  type = list(object({
+    name = string
+    port = number
+  }))
+}
+
+variable "volume_name" {
+  description = "The name of the volume you want Jenkins to use."
+  type        = string
+}
+
+variable "volume_type" {
+  description = "The type of the volume you want Jenkins to use."
+  type        = string
+  default     = "host"
+}
+
+variable "mimir_cli_args" {
+  description = "Details configuration options for the mimir task."
+  type        = list(string)
+  default     = []
 }
 
 variable "mimir_task_alertmanager_mimir_yaml" {
@@ -101,21 +140,4 @@ variable "mimir_task_app_mimir_yaml" {
   description = "The mimir configuration to pass to the task."
   type        = string
   default     = ""
-}
-
-variable "mimir_upstreams" {
-  description = ""
-  type = list(object({
-    name = string
-    port = number
-  }))
-}
-
-variable "mimir_volume" {
-  description = "The resource to assign to the mimir service task"
-  type = object({
-    name   = string
-    type   = string
-    source = string
-  })
 }
