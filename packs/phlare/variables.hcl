@@ -113,6 +113,18 @@ variable "service_upstreams" {
   }))
 }
 
+variable "volume_access_mode" {
+  description = "Defines whether a volume should be available concurrently."
+  type        = string
+  default     = "multi-node-multi-writer"
+}
+
+variable "volume_attachment_mode" {
+  description = "The storage API that will be used by the volume."
+  type        = string
+  default     = "file-system"
+}
+
 variable "volume_name" {
   description = "The name of the volume you want Jenkins to use."
   type        = string
