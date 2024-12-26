@@ -42,7 +42,10 @@ job [[ template "job_name" . ]] {
 
     network {
       [[ if var "register_service" . ]]
+      [[  $service_provider := var "service_provider" . ]]
+      [[ if eq $service_provider "consul" ]]
       mode = "bridge"
+      [[ end ]]
       [[ end ]]
       [[ range $idx, $service := var "task_services" . ]]
       port [[ $service.service_port_label | quote ]] {

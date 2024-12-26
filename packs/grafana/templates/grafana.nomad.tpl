@@ -5,7 +5,10 @@ job [[ template "job_name" . ]] {
   group "grafana" {
     network {
       [[ if var "register_service" . ]]
+      [[  $service_provider := var "service_provider" . ]]
+      [[ if eq $service_provider "consul" ]]
       mode = "bridge"
+      [[ end ]]
       [[ end ]]
       port "http" {
         to = 3000
