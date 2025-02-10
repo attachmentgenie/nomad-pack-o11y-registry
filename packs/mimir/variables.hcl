@@ -136,19 +136,19 @@ variable "volume_type" {
   default     = "host"
 }
 
-variable "mimir_cli_args" {
+variable "additional_cli_args" {
   description = "Details configuration options for the mimir task."
   type        = list(string)
   default     = []
 }
 
-variable "mimir_task_alertmanager_mimir_yaml" {
+variable "task_alertmanager_yaml" {
   description = "The mimir configuration to pass to the task."
   type        = string
   default     = ""
 }
 
-variable "mimir_task_app_mimir_yaml" {
+variable "task_mimir_yaml" {
   description = "The mimir configuration to pass to the task."
   type        = string
   default     = ""

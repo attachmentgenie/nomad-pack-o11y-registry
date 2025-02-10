@@ -11,5 +11,5 @@ pack {
 dependency "attachmentgenie_pack_helpers" {
   alias  = "attachmentgenie_pack_helpers"
   source = "git::https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry.git//packs/attachmentgenie_pack_helpers"
-  ref    = "c9bf50a9"
+  ref    = "782df6bb"
 }

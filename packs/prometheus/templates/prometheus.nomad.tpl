@@ -64,7 +64,7 @@ job [[ template "job_name" . ]] {
       config {
         image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         ports   = ["http"]
-        args = [[ var "prometheus_cli_args" . | toPrettyJson ]]
+        args = [[ var "additional_cli_args" . | toPrettyJson ]]
         volumes = [
           "local/config:/etc/prometheus/config",
         ]

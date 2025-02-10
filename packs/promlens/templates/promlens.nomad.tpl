@@ -60,7 +60,7 @@ job [[ template "job_name" . ]] {
 
       config {
         image = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
-        args  = [[ var "promlens_cli_args" . | toPrettyJson ]]
+        args  = [[ var "additional_cli_args" . | toPrettyJson ]]
         ports = ["http"]
       }
     }

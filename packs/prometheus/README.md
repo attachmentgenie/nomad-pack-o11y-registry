@@ -14,13 +14,12 @@ ways.
 - `constraints` (list(object)) - Constraints to apply to the entire job.
 - `prometheus_group_network` (object) - The Prometheus network configuration options.
 - `prometheus_task` (object) - Details configuration options for the Prometheus task.
-- `prometheus_task_app_prometheus_yaml` (string) - The Prometheus configuration to pass to the
+- `task_prometheus_yaml` (string) - The Prometheus configuration to pass to the
 task. The default value includes scrape configuration for Nomad servers, Nomad client, and
 Prometheus.
-- `prometheus_task_app_rules_yaml` (string) - Configuration for the alerts to be setup in prometheus.
+- `task_rules_yaml` (string) - Configuration for the alerts to be setup in prometheus.
 An example config is included in the alers_vars.nomad file.
 - `prometheus_task_resources` (object) - The resource to assign to the Prometheus task.
-- `prometheus_task_services` (object) - Configuration options of the Prometheus services and checks.
 
 ### `constraints` List of Objects
 
@@ -73,16 +72,6 @@ The default CLI arguments pass to Prometheus:
 
 -`cpu` (number 500) - Specifies the CPU required to run this task in MHz.
 -`memory` (number 256) - Specifies the memory required in MB.
-
-### `prometheus_task_services` List of Objects
-
-- `service_port_label` (string) - Specifies the port to advertise for this service.
-- `service_name` (string) - Specifies the name this service will be advertised as in Consul.
-- `service_tags` (list(string)) - Specifies the list of tags to associate with this service.
-- `check_enabled` (bool) - Whether to enable a check for this service.
-- `check_path` (string) - The HTTP path to query Prometheus.
-- `check_interval` (string) - Specifies the frequency of the health checks that Consul will perform.
-- `check_timeout` (string) - Specifies how long Consul will wait for a health check query to succeed.
 
 The default value for this variable configures a service for the Prometheus API along with a check
 running against the Prometheus [management API][prometheus_management_api] health check endpoint.

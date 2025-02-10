@@ -79,17 +79,17 @@ job [[ template "job_name" . ]] {
 
       config {
         image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
-        args = [[ var "mimir_cli_args" . | toPrettyJson ]]
+        args = [[ var "additional_cli_args" . | toPrettyJson ]]
         ports = ["gossip","grpc","http"]
         volumes = [
           "local/config:/etc/mimir",
         ]
       }
 
-      [[- if var "mimir_task_app_mimir_yaml" . ]]
+      [[- if var "task_mimir_yaml" . ]]
       template {
         data = <<EOH
-[[ var "mimir_task_app_mimir_yaml" . ]]
+[[ var "task_mimir_yaml" . ]]
 EOH
 
         change_mode   = "signal"
@@ -98,10 +98,10 @@ EOH
       }
       [[- end ]]
 
-      [[- if var "mimir_task_alertmanager_mimir_yaml" . ]]
+      [[- if var "task_alertmanager_yaml" . ]]
       template {
         data = <<EOH
-[[ var "mimir_task_alertmanager_mimir_yaml" . ]]
+[[ var "task_alertmanager_yaml" . ]]
 EOH
 
         change_mode   = "signal"

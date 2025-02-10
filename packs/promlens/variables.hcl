@@ -113,7 +113,7 @@ variable "service_upstreams" {
   }))
 }
 
-variable "promlens_cli_args" {
+variable "additional_cli_args" {
   description = "Details configuration options for the mimir task."
   type        = list(string)
   default     = []

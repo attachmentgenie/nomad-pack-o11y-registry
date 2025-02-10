@@ -40,9 +40,6 @@
 
 ## `constraints` helper
 
-This helper creates Nomad constraint blocks from a value of type
-  `list(object(attribute string, operator string, value string))`
-
 */ -]]
 
 [[ define "constraints" -]]
@@ -57,7 +54,12 @@ This helper creates Nomad constraint blocks from a value of type
 [[ end -]]
 [[- end -]]
 
-// limit where job can run
+[[- /*
+
+## `placement` helper
+
+*/ -]]
+
 [[ define "placement" -]]
   [[ template "region" . ]]
   datacenters = [[ var "datacenters" . | toStringList ]]

@@ -1,3 +1,9 @@
+[[- /*
+
+## `env` helper
+
+*/ -]]
+
 [[- define "env_upper" -]]
   env {
     [[ range $key, $var := var "env_vars" . ]]
@@ -5,6 +11,12 @@
     [[ end ]]
   }
 [[- end -]]
+
+[[- /*
+
+## `env` helper
+
+*/ -]]
 
 [[- define "env_dots" -]]
   env = {

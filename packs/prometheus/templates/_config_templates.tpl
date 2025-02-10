@@ -1,8 +1,8 @@
 [[- define "prometheus_yaml_template" -]]
-[[- if var "prometheus_task_app_prometheus_yaml" . -]]
+[[- if var "task_prometheus_yaml" . -]]
 template {
   data = <<EOH
-[[ var "prometheus_task_app_prometheus_yaml" . ]]
+[[ var "task_prometheus_yaml" . ]]
 EOH
   change_mode   = "signal"
   change_signal = "SIGHUP"
@@ -12,10 +12,10 @@ EOH
 [[- end ]]
 
 [[- define "rules_yaml_template" -]]
-[[- if var "prometheus_task_app_rules_yaml" . -]]
+[[- if var "task_rules_yaml" . -]]
 template {
   data = <<EOH
-[[ var "prometheus_task_app_rules_yaml" . ]]
+[[ var "task_rules_yaml" . ]]
 EOH
   change_mode   = "signal"
   change_signal = "SIGHUP"

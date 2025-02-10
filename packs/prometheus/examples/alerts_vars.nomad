@@ -1,4 +1,4 @@
-prometheus_task_app_rules_yaml = <<EOF
+task_rules_yaml = <<EOF
 ---
 groups:
 - name: AllInstances

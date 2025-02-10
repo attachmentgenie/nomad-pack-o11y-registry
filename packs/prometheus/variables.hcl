@@ -136,7 +136,7 @@ variable "volume_type" {
   default     = "host"
 }
 
-variable "prometheus_cli_args" {
+variable "additional_cli_args" {
   description = "Details configuration options for the mimir task."
   type        = list(string)
   default = [
@@ -148,7 +148,7 @@ variable "prometheus_cli_args" {
   ]
 }
 
-variable "prometheus_task_app_prometheus_yaml" {
+variable "task_prometheus_yaml" {
   description = "The Prometheus configuration to pass to the task."
   type        = string
   default     = <<EOF
@@ -195,7 +195,7 @@ scrape_configs:
 EOF
 }
 
-variable "prometheus_task_app_rules_yaml" {
+variable "task_rules_yaml" {
   description = "Yaml configuration for the alerts to setup in prometheus."
   type        = string
   default     = ""

@@ -1,4 +1,9 @@
-// Generic resources template
+[[- /*
+
+## `resources` helper
+
+*/ -]]
+
 [[ define "resources" -]]
 [[- $resources := var "task_resources" . ]]
       resources {

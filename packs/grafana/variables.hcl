@@ -147,25 +147,18 @@ variable "env_vars" {
   }
 }
 
-variable "grafana_task_artifacts" {
-  description = "Define external artifacts for Grafana."
+variable "task_artifacts" {
+  description = "Define external artifacts for the grafana."
   type = list(object({
     source      = string
     destination = string
     mode        = string
     options     = map(string)
   }))
-  default = [
-    {
-      source      = "https://grafana.com/api/dashboards/1860/revisions/26/download",
-      destination = "local/grafana/provisioning/dashboards/linux/linux-node-exporter.json"
-      mode        = "file"
-      options     = null
-    },
-  ]
+  default = []
 }
 
-variable "grafana_task_config_dashboards" {
+variable "task_config_dashboards" {
   description = "The yaml configuration for automatic provision of dashboards"
   type        = string
   default     = <<EOF
@@ -181,7 +174,7 @@ providers:
 EOF
 }
 
-variable "grafana_task_config_datasources" {
+variable "task_config_datasources" {
   description = "The yaml configuration for automatic provision of datasources"
   type        = string
   default     = <<EOF
@@ -213,7 +206,7 @@ datasources:
 EOF
 }
 
-variable "grafana_task_config_plugins" {
+variable "task_config_plugins" {
   description = "The yaml configuration for automatic provision of plugins"
   type        = string
 }

@@ -3,6 +3,7 @@ job [[ template "job_name" . ]] {
   type = "service"
 
   group "grafana" {
+
     network {
       [[ if var "register_service" . ]]
       [[  $service_provider := var "service_provider" . ]]
@@ -14,8 +15,6 @@ job [[ template "job_name" . ]] {
         to = 3000
       }
     }
-
-    [[ template "volume" . ]]
 
     [[ if var "register_service" . ]]
     service {
@@ -44,69 +43,55 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
+    [[ template "volume" . ]]
+
     task "grafana" {
       driver = "docker"
-
-      [[ if var "volume_name" . ]]
-      volume_mount {
-        volume      = [[ var "volume_name" . | quote ]]
-        destination = "/var/lib/grafana"
-        read_only   = false
-      }
-      [[- end ]]
 
       config {
         image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         ports = ["http"]
       }
 
-      [[ template "resources" . ]]
+      [[ template "artifacts" . ]]
 
       [[ template "env_upper" . ]]
 
-      [[- if var "grafana_task_artifacts" . ]]
-      [[- range $artifact := var "grafana_task_artifacts" . ]]
-      artifact {
-        source      = [[ $artifact.source | quote ]]
-        destination = [[ $artifact.destination | quote ]]
-        mode = [[ $artifact.mode | quote ]]
-        [[- if $artifact.options ]]
-        options {
-          [[- range $option, $val := $artifact.options ]]
-          [[ $option ]] = [[ $val | quote ]]
-          [[- end ]]
-        }
-        [[- end ]]
+      [[ template "resources" . ]]
 
-      }
-      [[- end ]]
-      [[- end ]]
-
-      [[- if var "grafana_task_config_dashboards" . ]]
+      [[- if var "task_config_dashboards" . ]]
       template {
         data = <<EOF
-[[ var "grafana_task_config_dashboards" . ]]
+[[ var "task_config_dashboards" . ]]
 EOF
         destination = "/local/grafana/provisioning/dashboards/dashboards.yaml"
       }
       [[- end ]]
 
-      [[- if var "grafana_task_config_datasources" . ]]
+      [[- if var "task_config_datasources" . ]]
       template {
         data = <<EOF
-[[ var "grafana_task_config_datasources" . ]]
+[[ var "task_config_datasources" . ]]
 EOF
         destination = "/local/grafana/provisioning/datasources/datasources.yaml"
       }
       [[- end ]]
 
-      [[- if var "grafana_task_config_plugins" . ]]
+      [[- if var "task_config_plugins" . ]]
       template {
         data = <<EOF
-[[ var "grafana_task_config_plugins" . ]]
+[[ var "task_config_plugins" . ]]
 EOF
         destination = "/local/grafana/provisioning/plugins/plugins.yml"
       }
+    [[- end ]]
+
+    [[ if var "volume_name" . ]]
+    volume_mount {
+        volume      = [[ var "volume_name" . | quote ]]
+        destination = "/var/lib/grafana"
+        read_only   = false
+    }
     [[- end ]]
     }
   }

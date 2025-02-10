@@ -6,6 +6,7 @@ See the [documentation on Writing Packs and Registries](https://github.com/hashi
 
 This registry current holds packs for the following tools
 
+* [WIP] coroot
 * grafana (fork from community registry)
 * grafana_oncall
 * loki (fork from community registry)

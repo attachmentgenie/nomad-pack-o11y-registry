@@ -105,7 +105,7 @@ variable "service_tags" {
   default     = []
 }
 
-variable "prometheus_blackbox_exporter_task_blackbox_yaml" {
+variable "task_blackbox_yaml" {
   description = "The Blackbox configuration to pass to the task."
   type        = string
   default     = <<EOF

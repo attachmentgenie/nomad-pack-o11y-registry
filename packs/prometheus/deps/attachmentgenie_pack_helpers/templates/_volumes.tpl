@@ -1,4 +1,9 @@
-// Generic volumes template
+[[- /*
+
+## `volumes` helper
+
+*/ -]]
+
 [[ define "volume" -]]
     [[ if var "volume_name" . ]]
     volume "[[ var "volume_name" . ]]" {
